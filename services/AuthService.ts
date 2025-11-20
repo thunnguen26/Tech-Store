@@ -1,84 +1,203 @@
-import { User } from "@/models/User.model"
-import type { ILoginCredentials, IRegisterData, IUser } from "@/types/user.types"
+// services/AuthService.ts
+
+// URL trỏ đến backend PHP của bạn
+const API_BASE_URL = 'http://localhost/techstore-api';
+
+// === CÁC INTERFACE CHO ĐĂNG KÝ ===
+export interface RegisterData {
+  firstName: string;
+  lastName: string;
+  email: string;
+  phone: string;
+  password: string;
+}
+
+// === CÁC INTERFACE MỚI CHO ĐĂNG NHẬP ===
+export interface LoginData {
+  email: string;
+  password: string;
+}
+
+export interface UserData {
+  id: number;
+  firstName: string;
+  lastName: string;
+}
+
+// === INTERFACE TRẢ VỀ (ĐÃ CẬP NHẬT) ===
+// Giờ nó có thể chứa thông tin 'user'
+export interface AuthResponse {
+  success: boolean;
+  message: string;
+  user?: UserData; // Thêm trường user (tùy chọn)
+}
+
+// THÊM INTERFACE MỚI CHO DỮ LIỆU ĐẦY ĐỦ
+export interface FullUserData {
+  id: number;
+  first_name: string;
+  last_name: string;
+  email: string;
+  phone: string;
+  created_at: string;
+}
+
 
 export class AuthService {
-  private static instance: AuthService
-  private currentUser: User | null = null
 
-  private constructor() {
-    this.loadUserFromStorage()
-  }
+  /**
+   * HÀM ĐĂNG KÝ
+   */
+  static async register(userData: RegisterData): Promise<AuthResponse> {
+    try {
+      const response = await fetch(`${API_BASE_URL}/register.php`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(userData), 
+      });
 
-  // Singleton pattern
-  static getInstance(): AuthService {
-    if (!AuthService.instance) {
-      AuthService.instance = new AuthService()
+      const data = await response.json();
+
+      if (!response.ok) {
+        return { success: false, message: data.message || 'Đã xảy ra lỗi' };
+      }
+
+      return { success: true, message: data.message };
+
+    } catch (error) {
+      console.error("Lỗi khi gọi API đăng ký:", error);
+      return { success: false, message: 'Không thể kết nối đến máy chủ.' };
     }
-    return AuthService.instance
   }
 
-  // Storage operations
-  private loadUserFromStorage(): void {
-    if (typeof window === "undefined") return
-    const stored = localStorage.getItem("user")
-    if (stored) {
-      const userData: IUser = JSON.parse(stored)
-      this.currentUser = new User(userData)
+  /**
+   * HÀM ĐĂNG NHẬP 
+   */
+  static async login(loginData: LoginData): Promise<AuthResponse> {
+    try {
+      const response = await fetch(`${API_BASE_URL}/login.php`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(loginData),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        // Lỗi (400, 401, 404, 500...)
+        return { success: false, message: data.message || 'Đăng nhập thất bại' };
+      }
+
+      // Đăng nhập thành công (response 200)
+      // data.user sẽ chứa thông tin người dùng
+      return { success: true, message: data.message, user: data.user };
+
+    } catch (error) {
+      console.error("Lỗi khi gọi API đăng nhập:", error);
+      return { success: false, message: 'Không thể kết nối đến máy chủ.' };
     }
   }
 
-  private saveUserToStorage(user: User): void {
-    if (typeof window === "undefined") return
-    localStorage.setItem("user", JSON.stringify(user))
+  /**
+   *Gọi API forgot-password.php
+   */
+  static async forgotPassword(email: string): Promise<AuthResponse> {
+    try {
+      const response = await fetch(`${API_BASE_URL}/forgot-password.php`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ email: email }), // Gửi email
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        // Lỗi 400, 500...
+        return { success: false, message: data.message || 'Đã xảy ra lỗi' };
+      }
+
+      // Thành công (response 200)
+      return { success: true, message: data.message };
+
+    } catch (error) {
+      console.error("Lỗi khi gọi API quên mật khẩu:", error);
+      return { success: false, message: 'Không thể kết nối đến máy chủ.' };
+    }
   }
 
-  private removeUserFromStorage(): void {
-    if (typeof window === "undefined") return
-    localStorage.removeItem("user")
-  }
+/**
+   *  Gọi API reset-password.php
+   */
+static async resetPassword(token: string, password: string): Promise<AuthResponse> {
+  try {
+    const response = await fetch(`${API_BASE_URL}/reset-password.php`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ token, password }), // Gửi token và mật khẩu mới
+    });
 
-  // Auth operations (mock implementation)
-  async login(credentials: ILoginCredentials): Promise<User> {
-    // Mock login - in real app, this would call API
-    await new Promise((resolve) => setTimeout(resolve, 1000))
+    const data = await response.json();
 
-    const mockUser: IUser = {
-      id: "1",
-      email: credentials.email,
-      name: "Người dùng",
-      phone: "0123456789",
+    if (!response.ok) {
+      // Lỗi 400 (Token hết hạn), 500...
+      return { success: false, message: data.message || 'Đã xảy ra lỗi' };
     }
 
-    this.currentUser = new User(mockUser)
-    this.saveUserToStorage(this.currentUser)
-    return this.currentUser
+    // Thành công (response 200)
+    return { success: true, message: data.message };
+
+  } catch (error) {
+    console.error("Lỗi khi gọi API đặt lại mật khẩu:", error);
+    return { success: false, message: 'Không thể kết nối đến máy chủ.' };
+  }
+}
+
+
+/**
+   *  Lấy thông tin chi tiết của người dùng đã đăng nhập
+   */
+static async getUserDetails(): Promise<FullUserData | null> {
+  // 1. Lấy user_id từ localStorage
+  const userDataString = localStorage.getItem('techstore_user');
+  if (!userDataString) {
+    return null; // Chưa đăng nhập
+  }
+  
+  let userId: number | null = null;
+  try {
+    userId = JSON.parse(userDataString).id;
+  } catch (e) {
+    return null;
   }
 
-  async register(data: IRegisterData): Promise<User> {
-    // Mock register - in real app, this would call API
-    await new Promise((resolve) => setTimeout(resolve, 1000))
+  if (!userId) {
+    return null;
+  }
 
-    const mockUser: IUser = {
-      id: Date.now().toString(),
-      email: data.email,
-      name: data.name,
+  // 2. Gọi API mới
+  try {
+    const response = await fetch(`${API_BASE_URL}/get_user_details.php?user_id=${userId}`);
+    
+    if (!response.ok) {
+      console.error("Lỗi khi lấy chi tiết người dùng:", response.status);
+      return null;
     }
 
-    this.currentUser = new User(mockUser)
-    this.saveUserToStorage(this.currentUser)
-    return this.currentUser
-  }
+    const data: FullUserData = await response.json();
+    return data;
 
-  logout(): void {
-    this.currentUser = null
-    this.removeUserFromStorage()
+  } catch (error) {
+    console.error("Lỗi khi gọi API chi tiết người dùng:", error);
+    return null;
   }
+}
 
-  getCurrentUser(): User | null {
-    return this.currentUser
-  }
-
-  isAuthenticated(): boolean {
-    return this.currentUser !== null
-  }
 }

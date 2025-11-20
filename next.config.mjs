@@ -1,14 +1,17 @@
+// next.config.mjs
+
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  eslint: {
-    ignoreDuringBuilds: true,
-  },
-  typescript: {
-    ignoreBuildErrors: true,
-  },
   images: {
-    unoptimized: true,
+    remotePatterns: [
+      {
+        protocol: 'http',
+        hostname: 'localhost',
+        port: '', // Cổng 80 mặc định của XAMPP
+        pathname: '/techstore-api/uploads/**', // Cho phép tất cả ảnh trong thư mục uploads
+      },
+    ],
   },
-}
+};
 
-export default nextConfig
+export default nextConfig;

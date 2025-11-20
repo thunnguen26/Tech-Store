@@ -1,188 +1,388 @@
-import { Product, ProductDetail } from "@/models/Product.model"
-import type { IProduct, IProductDetail, ProductCategory } from "@/types/product.types"
+// services/ProductService.ts
+
+// === INTERFACES DỮ LIỆU CHUNG ===
+export interface ProductVariant {
+  id: number;
+  product_id: number;
+  size: string | null;
+  color_name: string | null;
+  color_hex: string | null;
+  price: number;
+  original_price: number | null;
+  sku: string | null;
+  stock_quantity: number;
+}
+
+export interface Product {
+  id: number;
+  name: string;
+  description: string | null;
+  features: string | null | any;
+  brand: string | null;
+  model: string | null;
+  base_image: string | null;
+  category_name: string;
+  status: string;
+  variants: ProductVariant[];
+  images: string[];
+  rating: number;
+  review_count: number;
+  reviews: Review[];
+}
+
+// === INTERFACE CHO ADMIN ===
+export interface AdminProduct {
+  id: number;
+  name: string;
+  category: string;
+  price: number;
+  originalPrice?: number;
+  stock: number;
+  sold: number;
+  status: 'active' | 'out_of_stock' | 'draft';
+  image: string;
+}
+
+// === INTERFACE CHO FORM ADD/EDIT PRODUCT ===
+export interface VariantFormData {
+  id?: number;
+  color_name: string;
+  color_hex: string;
+  size: string;
+  price: number;
+  original_price: number;
+  stock_quantity: number;
+  sku: string;
+}
+
+export interface AddProductFormData {
+  name: string;
+  description: string;
+  brand: string;
+  model?: string;
+  category: string;
+  status: string;
+  processor?: string;
+  ram?: string;
+  storage?: string;
+  screen?: string;
+  images: File[];
+  variants: Omit<VariantFormData, 'id'>[];
+}
+
+export interface UpdateProductFormData {
+  name: string;
+  description: string;
+  brand: string;
+  model?: string;
+  category: string;
+  status: string;
+  processor?: string;
+  ram?: string;
+  storage?: string;
+  screen?: string;
+  images: File[];
+  existingImages: string[];
+  variants: Omit<VariantFormData, 'id'>[];
+}
+
+// === ĐÁNH GIÁ ===
+export interface ReviewFormData {
+  user_id: number;
+  product_id: number;
+  order_id: number;
+  rating: number;
+  comment: string;
+}
+
+export interface Review {
+  rating: number;
+  comment: string | null;
+  created_at: string;
+  user_name: string;
+}
+
+// Dữ liệu chi tiết cho trang Edit
+export interface AdminProductDetails {
+  product: Product;
+  variants: ProductVariant[];
+  images: string[];
+}
+
+
+export interface CategoryInfo {
+  id: number;
+  name: string;
+  count: number;
+}
+
+const API_BASE_URL = 'http://localhost/techstore-api';
 
 export class ProductService {
-  private static instance: ProductService
-  private products: Product[] = []
-
-  private constructor() {
-    this.initializeMockData()
-  }
-
-  // Singleton pattern
-  static getInstance(): ProductService {
-    if (!ProductService.instance) {
-      ProductService.instance = new ProductService()
+  /** Lấy tất cả sản phẩm */
+  static async getAllProducts(): Promise<Product[]> {
+    try {
+      const response = await fetch(`${API_BASE_URL}/products.php`);
+      if (!response.ok) throw new Error(`HTTP error ${response.status}`);
+      return await response.json();
+    } catch (error) {
+      console.error("Lỗi khi fetch sản phẩm:", error);
+      return [];
     }
-    return ProductService.instance
   }
 
-  // Initialize with mock data
-  private initializeMockData(): void {
-    const mockProducts: IProduct[] = [
-      {
-        id: "1",
-        name: "iPhone 15 Pro Max",
-        price: 29990000,
-        originalPrice: 34990000,
-        image: "/iphone-15-pro-max.jpg",
-        category: "Điện thoại",
-        rating: 4.9,
-        reviews: 328,
-      },
-      {
-        id: "2",
-        name: "Samsung Galaxy S24 Ultra",
-        price: 27990000,
-        originalPrice: 32990000,
-        image: "/samsung-s24-ultra.jpg",
-        category: "Điện thoại",
-        rating: 4.8,
-        reviews: 245,
-      },
-      {
-        id: "3",
-        name: "MacBook Pro M3 14 inch",
-        price: 42990000,
-        originalPrice: 49990000,
-        image: "/macbook-pro-m3.jpg",
-        category: "Laptop",
-        rating: 5,
-        reviews: 256,
-      },
-      {
-        id: "4",
-        name: "Dell XPS 15",
-        price: 35990000,
-        originalPrice: 42990000,
-        image: "/dell-xps-15.jpg",
-        category: "Laptop",
-        rating: 4.7,
-        reviews: 189,
-      },
-      {
-        id: "5",
-        name: "iPad Pro 12.9 inch M2",
-        price: 28990000,
-        originalPrice: 34990000,
-        image: "/ipad-pro-m2.jpg",
-        category: "Máy tính bảng",
-        rating: 4.8,
-        reviews: 167,
-      },
-      {
-        id: "6",
-        name: "AirPods Pro 2",
-        price: 5990000,
-        originalPrice: 7490000,
-        image: "/airpods-pro-2.jpg",
-        category: "Phụ kiện",
-        rating: 4.9,
-        reviews: 412,
-      },
-      {
-        id: "7",
-        name: "Apple Watch Series 9",
-        price: 10990000,
-        originalPrice: 12990000,
-        image: "/apple-watch-9.jpg",
-        category: "Phụ kiện",
-        rating: 4.7,
-        reviews: 298,
-      },
-      {
-        id: "8",
-        name: "Sony WH-1000XM5",
-        price: 7990000,
-        originalPrice: 9990000,
-        image: "/sony-wh1000xm5.jpg",
-        category: "Phụ kiện",
-        rating: 4.9,
-        reviews: 356,
-      },
-    ]
-
-    this.products = mockProducts.map((p) => new Product(p))
+  /** Lấy chi tiết sản phẩm theo ID */
+  static async getProductById(id: string): Promise<Product | null> {
+    try {
+      const response = await fetch(`${API_BASE_URL}/product_detail.php?id=${id}`);
+      if (!response.ok) return null;
+      return await response.json();
+    } catch (error) {
+      console.error(`Lỗi khi fetch sản phẩm ${id}:`, error);
+      return null;
+    }
   }
 
-  // CRUD operations
-  getAllProducts(): Product[] {
-    return [...this.products]
-  }
-
-  getProductById(id: string): Product | undefined {
-    return this.products.find((p) => p.id === id)
-  }
-
-  getProductsByCategory(category: ProductCategory): Product[] {
-    return this.products.filter((p) => p.category === category)
-  }
-
-  searchProducts(query: string): Product[] {
-    const lowerQuery = query.toLowerCase()
-    return this.products.filter((p) => p.name.toLowerCase().includes(lowerQuery))
-  }
-
-  filterProducts(filters: {
-    categories?: ProductCategory[]
-    minPrice?: number
-    maxPrice?: number
-    minRating?: number
-  }): Product[] {
-    return this.products.filter((product) => {
-      if (filters.categories && filters.categories.length > 0) {
-        if (!filters.categories.includes(product.category)) return false
+  /** Lấy danh sách sản phẩm cho trang Admin */
+  static async getAdminProducts(): Promise<AdminProduct[]> {
+    try {
+      // GỌI ĐÚNG API ADMIN (admin_products_get.php)
+      const response = await fetch(`${API_BASE_URL}/admin/admin_products_get.php`);
+      
+      if (!response.ok) {
+        throw new Error(`HTTP error ${response.status}`);
       }
-      if (filters.minPrice !== undefined && product.price < filters.minPrice) return false
-      if (filters.maxPrice !== undefined && product.price > filters.maxPrice) return false
-      if (filters.minRating !== undefined && product.rating < filters.minRating) return false
-      return true
-    })
-  }
+      
+      const products: Product[] = await response.json();
+      
+      if (!products || products.length === 0) {
+        return [];
+      }
 
-  sortProducts(products: Product[], sortBy: "price-asc" | "price-desc" | "name" | "rating"): Product[] {
-    const sorted = [...products]
-    switch (sortBy) {
-      case "price-asc":
-        return sorted.sort((a, b) => a.price - b.price)
-      case "price-desc":
-        return sorted.sort((a, b) => b.price - a.price)
-      case "name":
-        return sorted.sort((a, b) => a.name.localeCompare(b.name))
-      case "rating":
-        return sorted.sort((a, b) => b.rating - a.rating)
-      default:
-        return sorted
+      const adminProducts = products.map((p): AdminProduct => {
+        // Tính tổng tồn kho từ TẤT CẢ các biến thể
+        const totalStock = p.variants && p.variants.length > 0 
+          ? p.variants.reduce((sum: number, v: ProductVariant) => {
+              return sum + (Number(v.stock_quantity) || 0);
+            }, 0)
+          : 0;
+        
+        // Lấy giá từ biến thể đầu tiên hoặc giá thấp nhất
+        const displayPrice = p.variants && p.variants.length > 0 
+          ? Math.min(...p.variants.map(v => Number(v.price) || 0))
+          : 0;
+        
+        const displayOriginalPrice = p.variants && p.variants.length > 0 && p.variants[0].original_price
+          ? Number(p.variants[0].original_price)
+          : null;
+
+        // Xác định status dựa trên tồn kho và status trong DB
+        let status: 'active' | 'out_of_stock' | 'draft';
+        if (p.status === 'draft' || p.status === 'archived') {
+          status = 'draft';
+        } else if (totalStock === 0) {
+          status = 'out_of_stock';
+        } else {
+          status = 'active';
+        }
+
+        return {
+          id: p.id,
+          name: p.name,
+          category: p.category_name,
+          price: displayPrice,
+          originalPrice: displayOriginalPrice || undefined,
+          stock: totalStock, // Tổng tồn kho từ tất cả biến thể
+          sold: p.review_count * 5,
+          status: status,
+          image: p.base_image || '/placeholder.svg'
+        };
+      });
+
+      return adminProducts;
+
+    } catch (error) {
+      console.error("Lỗi khi gọi API Admin Products:", error);
+      return [];
     }
   }
 
-  // Mock method to get product details (in real app, this would fetch from API)
-  getProductDetail(id: string): ProductDetail | undefined {
-    const product = this.getProductById(id)
-    if (!product) return undefined
+  /** Xóa (archive) một sản phẩm */
+  static async deleteProduct(productId: number): Promise<{ success: boolean; message: string }> {
+    try {
+      const response = await fetch(`${API_BASE_URL}/admin/admin_product_delete.php`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ product_id: productId }),
+      });
 
-    // Mock detailed data
-    const detailData: IProductDetail = {
-      ...product,
-      images: [product.image, product.image, product.image],
-      features: [
-        "Hiệu năng vượt trội với chip mới nhất",
-        "Màn hình chất lượng cao",
-        "Pin lâu dài",
-        "Thiết kế cao cấp",
-        "Bảo hành chính hãng 12 tháng",
-      ],
-      sizes: product.category === "Điện thoại" ? ["128GB", "256GB", "512GB"] : undefined,
-      colors:
-        product.category === "Điện thoại" || product.category === "Laptop"
-          ? [
-              { name: "Đen", value: "#000000" },
-              { name: "Trắng", value: "#FFFFFF" },
-              { name: "Xám", value: "#808080" },
-            ]
-          : undefined,
+      const data = await response.json();
+
+      if (!response.ok) {
+        return { success: false, message: data.message || 'Xóa thất bại' };
+      }
+
+      return { success: true, message: data.message };
+
+    } catch (error) {
+      console.error("Lỗi khi gọi API xóa sản phẩm:", error);
+      return { success: false, message: 'Không thể kết nối đến máy chủ.' };
     }
-
-    return new ProductDetail(detailData)
   }
+
+  /** Thêm sản phẩm mới với nhiều variants */
+  static async addProduct(productData: AddProductFormData): Promise<{ success: boolean; message: string; productId?: number }> {
+    try {
+      const formData = new FormData();
+      
+      formData.append('name', productData.name);
+      formData.append('description', productData.description);
+      formData.append('brand', productData.brand);
+      formData.append('model', productData.model || '');
+      formData.append('category', productData.category);
+      formData.append('status', productData.status);
+      formData.append('processor', productData.processor || '');
+      formData.append('ram', productData.ram || '');
+      formData.append('storage', productData.storage || '');
+      formData.append('screen', productData.screen || '');
+
+      formData.append('variants', JSON.stringify(productData.variants));
+
+      productData.images.forEach((file) => {
+        formData.append('images[]', file, file.name);
+      });
+
+      const response = await fetch(`${API_BASE_URL}/admin/admin_product_add.php`, {
+        method: 'POST',
+        body: formData,
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        return { success: false, message: data.message || 'Thêm sản phẩm thất bại.' };
+      }
+
+      return { success: true, message: data.message, productId: data.product_id };
+
+    } catch (error: any) {
+      console.error("Lỗi khi gọi API thêm sản phẩm:", error);
+      if (error.message.includes('JSON')) {
+        return { success: false, message: 'Lỗi nghiêm trọng từ server PHP.' };
+      }
+      return { success: false, message: 'Không thể kết nối đến máy chủ.' };
+    }
+  }
+
+  /** CẬP NHẬT sản phẩm */
+  static async updateProduct(
+    productId: number, 
+    productData: UpdateProductFormData
+  ): Promise<{ success: boolean; message: string }> {
+    try {
+      const formData = new FormData();
+      
+      // Thêm product_id
+      formData.append('product_id', productId.toString());
+      
+      // Thêm các trường cơ bản
+      formData.append('name', productData.name);
+      formData.append('description', productData.description);
+      formData.append('brand', productData.brand);
+      formData.append('model', productData.model || '');
+      formData.append('category', productData.category);
+      formData.append('status', productData.status);
+      formData.append('processor', productData.processor || '');
+      formData.append('ram', productData.ram || '');
+      formData.append('storage', productData.storage || '');
+      formData.append('screen', productData.screen || '');
+
+      // Thêm variants (JSON)
+      formData.append('variants', JSON.stringify(productData.variants));
+
+      // Thêm existing images (JSON)
+      formData.append('existing_images', JSON.stringify(productData.existingImages));
+
+      // Thêm ảnh mới (nếu có)
+      productData.images.forEach((file) => {
+        formData.append('images[]', file, file.name);
+      });
+
+      // Gửi request
+      const response = await fetch(`${API_BASE_URL}/admin/admin_product_update.php`, {
+        method: 'POST',
+        body: formData,
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        return { success: false, message: data.message || 'Cập nhật sản phẩm thất bại.' };
+      }
+
+      return { success: true, message: data.message };
+
+    } catch (error: any) {
+      console.error("Lỗi khi gọi API cập nhật sản phẩm:", error);
+      return { success: false, message: 'Không thể kết nối đến máy chủ.' };
+    }
+  }
+
+  /** Gửi đánh giá sản phẩm */
+  static async submitReview(reviewData: ReviewFormData): Promise<{ success: boolean; message: string }> {
+    try {
+      const response = await fetch(`${API_BASE_URL}/submit_review.php`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(reviewData),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        return { success: false, message: data.message || 'Gửi thất bại' };
+      }
+      return { success: true, message: data.message };
+
+    } catch (error) {
+      console.error("Lỗi khi gọi API gửi đánh giá:", error);
+      return { success: false, message: 'Không thể kết nối đến máy chủ.' };
+    }
+  }
+
+  /** Lấy chi tiết 1 sản phẩm (Admin) */
+  static async getAdminProductDetails(id: string | number): Promise<AdminProductDetails | null> {
+    try {
+      const response = await fetch(`${API_BASE_URL}/admin/admin_product_get_details.php?id=${id}`);
+      
+      if (!response.ok) {
+        console.error("Lỗi khi fetch chi tiết sản phẩm Admin:", response.status);
+        return null;
+      }
+      
+      const data: AdminProductDetails = await response.json();
+      return data;
+
+    } catch (error) {
+      console.error("Lỗi khi gọi API chi tiết sản phẩm Admin:", error);
+      return null;
+    }
+  }
+
+/**  Lấy thông tin danh mục */
+static async getCategories(): Promise<CategoryInfo[]> {
+  try {
+    const response = await fetch(`${API_BASE_URL}/get_categories_info.php`);
+    if (!response.ok) return [];
+    return await response.json();
+  } catch (error) {
+    console.error("Lỗi khi fetch categories:", error);
+    return [];
+  }
+}
+
 }

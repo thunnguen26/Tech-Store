@@ -3,7 +3,7 @@
 
 @custom-variant dark (&:is(.dark *));
 
-/* Updated theme colors for modern e-commerce design inspired by the design references */
+/*Updated theme colors for modern e-commerce design inspired by the design references */
 :root {
   --background: oklch(0.99 0.002 106);
   --foreground: oklch(0.15 0.01 270);

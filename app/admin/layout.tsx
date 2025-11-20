@@ -52,22 +52,6 @@ export default function AdminLayout({
               <Users className="h-5 w-5" />
               Khách hàng
             </Link>
-
-            <Link
-              href="/admin/analytics"
-              className="flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium text-gray-300 transition-colors hover:bg-gray-900 hover:text-white"
-            >
-              <BarChart3 className="h-5 w-5" />
-              Thống kê
-            </Link>
-
-            <Link
-              href="/admin/settings"
-              className="flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium text-gray-300 transition-colors hover:bg-gray-900 hover:text-white"
-            >
-              <Settings className="h-5 w-5" />
-              Cài đặt
-            </Link>
           </nav>
 
           {/* User Info */}
@@ -75,8 +59,8 @@ export default function AdminLayout({
             <div className="flex items-center gap-3">
               <div className="h-10 w-10 rounded-full bg-gradient-to-br from-blue-500 to-purple-600" />
               <div className="flex-1">
-                <p className="text-sm font-medium text-white">Admin User</p>
-                <p className="text-xs text-gray-400">admin@techstore.com</p>
+                <p className="text-sm font-medium text-white">Admin</p>
+                <p className="text-xs text-gray-400">thuannp.24it@vku.udn.vn</p>
               </div>
             </div>
           </div>

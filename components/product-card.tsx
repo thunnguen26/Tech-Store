@@ -1,8 +1,16 @@
+// components/product-card.tsx
+'use client'
+
+import { useState } from "react"
 import Link from "next/link"
 import Image from "next/image"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardFooter } from "@/components/ui/card"
-import { ShoppingCart, Heart } from "lucide-react"
+import { ShoppingCart, Heart, Star, Loader2 } from "lucide-react"
+
+// 1. IMPORT SERVICE VÀ TYPE
+import { CartService } from "@/services/CartService"
+import { ProductVariant } from "@/services/ProductService"
 
 interface ProductCardProps {
   id: string
@@ -12,51 +20,125 @@ interface ProductCardProps {
   image: string
   category: string
   rating?: number
+  reviewCount?: number
+  priority?: boolean
+  // 2. THÊM PROP VARIANTS ĐỂ BIẾT ID CẦN THÊM
+  variants?: ProductVariant[] 
 }
 
-export function ProductCard({ id, name, price, originalPrice, image, category, rating = 5 }: ProductCardProps) {
+export function ProductCard({ 
+  id, 
+  name, 
+  price, 
+  originalPrice, 
+  image, 
+  category, 
+  rating = 5,
+  reviewCount = 0,
+  priority = false,
+  variants = [] // Mặc định là mảng rỗng
+}: ProductCardProps) {
+  const [isAdding, setIsAdding] = useState(false)
   const discount = originalPrice ? Math.round(((originalPrice - price) / originalPrice) * 100) : 0
 
+  // 3. HÀM XỬ LÝ THÊM VÀO GIỎ
+  const handleAddToCart = async (e: React.MouseEvent) => {
+    e.preventDefault() // Ngăn chặn chuyển trang khi bấm nút
+    e.stopPropagation() // Ngăn chặn sự kiện nổi bọt
+
+    // Tìm biến thể phù hợp để thêm (ưu tiên biến thể có giá đang hiển thị, còn hàng)
+    // Nếu không tìm thấy (ví dụ card hiển thị giá min), lấy biến thể đầu tiên còn hàng
+    let variantToAdd = variants.find(v => v.stock_quantity > 0);
+    
+    if (!variantToAdd) {
+      alert("Sản phẩm này hiện đang hết hàng.");
+      return;
+    }
+
+    setIsAdding(true);
+    try {
+      // Gọi API thêm vào giỏ (mặc định số lượng 1)
+      const result = await CartService.addItem(variantToAdd.id, 1);
+      
+      if (result.success) {
+        alert("Đã thêm vào giỏ hàng!");
+        // Cập nhật icon giỏ hàng trên Header
+        window.dispatchEvent(new CustomEvent('cartUpdated'));
+      } else {
+        alert(`Lỗi: ${result.message}`);
+      }
+    } catch (error) {
+      console.error(error);
+      alert("Lỗi kết nối đến máy chủ.");
+    } finally {
+      setIsAdding(false);
+    }
+  }
+
   return (
-    <Card className="group overflow-hidden hover:shadow-lg transition-shadow duration-300">
-      <Link href={`/products/${id}`}>
+    <Card className="group overflow-hidden hover:shadow-lg transition-shadow duration-300 h-full flex flex-col">
+      <Link href={`/products/${id}`} className="flex-1">
         <div className="relative aspect-square overflow-hidden bg-muted">
           <Image
             src={image || "/placeholder.svg"}
             alt={name}
             fill
             className="object-cover transition-transform duration-300 group-hover:scale-105"
+            sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+            priority={priority}
           />
           {discount > 0 && (
             <div className="absolute top-2 right-2 bg-destructive text-destructive-foreground px-2 py-1 rounded-md text-xs font-semibold">
               -{discount}%
             </div>
           )}
-          <Button variant="ghost" size="icon" className="absolute top-2 left-2 bg-background/80 hover:bg-background">
+          {/* Nút yêu thích (Giữ nguyên, chưa có logic) */}
+          <Button variant="ghost" size="icon" className="absolute top-2 left-2 bg-background/80 hover:bg-background" onClick={(e) => {e.preventDefault(); alert('Chức năng yêu thích đang phát triển')}}>
             <Heart className="h-4 w-4" />
           </Button>
         </div>
-      </Link>
 
-      <CardContent className="p-4">
-        <Link href={`/products/${id}`}>
+        <CardContent className="p-4">
           <p className="text-xs text-muted-foreground mb-1">{category}</p>
-          <h3 className="font-semibold text-sm mb-2 line-clamp-2 hover:text-accent transition-colors">{name}</h3>
+          <h3 className="font-semibold text-sm mb-2 line-clamp-2 hover:text-accent transition-colors min-h-[40px]">{name}</h3>
+          
+          {rating > 0 && (
+            <div className="flex items-center gap-1 mb-2">
+              <div className="flex items-center">
+                {[...Array(5)].map((_, i) => (
+                  <Star
+                    key={i}
+                    className={`h-3 w-3 ${
+                      i < Math.floor(rating) ? "fill-yellow-400 text-yellow-400" : "fill-gray-300 text-gray-300"
+                    }`}
+                  />
+                ))}
+              </div>
+              {reviewCount > 0 && (
+                <span className="text-xs text-muted-foreground">({reviewCount})</span>
+              )}
+            </div>
+          )}
+
           <div className="flex items-center gap-2">
             <span className="text-lg font-bold">{price.toLocaleString("vi-VN")}₫</span>
-            {originalPrice && (
+            {originalPrice && originalPrice > price && (
               <span className="text-sm text-muted-foreground line-through">
                 {originalPrice.toLocaleString("vi-VN")}₫
               </span>
             )}
           </div>
-        </Link>
-      </CardContent>
+        </CardContent>
+      </Link>
 
-      <CardFooter className="p-4 pt-0">
-        <Button className="w-full" size="sm">
-          <ShoppingCart className="h-4 w-4 mr-2" />
-          Thêm vào giỏ
+      <CardFooter className="p-4 pt-0 mt-auto">
+        <Button className="w-full" size="sm" onClick={handleAddToCart} disabled={isAdding}>
+          {isAdding ? (
+            <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+          ) : (
+            <ShoppingCart className="h-4 w-4 mr-2" />
+          )}
+          {isAdding ? "Đang thêm..." : "Thêm vào giỏ"}
         </Button>
       </CardFooter>
     </Card>

@@ -101,7 +101,7 @@ try {
 
     // 4. TRẢ VỀ THÀNH CÔNG
     http_response_code(200);
-    echo json_encode(array("message" => "Đã thêm sản phẩm vào giỏ hàng thành công."));
+    // echo json_encode(array("message" => "Đã thêm sản phẩm vào giỏ hàng thành công."));
 
 } catch (Exception $e) {
     http_response_code(500);

@@ -1,7 +1,7 @@
 <?php
 // htdocs/techstore-api/admin/admin_customers_get.php
 
-// === HEADER (Quan trọng cho CORS) ===
+
 header("Access-Control-Allow-Origin: http://localhost:3000");
 header("Access-Control-Allow-Methods: GET, OPTIONS"); 
 header("Access-Control-Allow-Headers: Content-Type");
@@ -26,25 +26,26 @@ if ($conn->connect_error) {
     exit(); 
 }
 
-// === XỬ LÝ LOGIC (ĐÃ SỬA LỖI) ===
+
 try {
-    // 1. SỬA LỖI: Xóa dòng "AND o.status IN (...)"
+   
     $sql = "
-        SELECT 
-            u.id, 
-            CONCAT(u.first_name, ' ', u.last_name) AS name, 
-            u.email, 
-            u.phone, 
-            u.created_at AS joinDate,
-            COUNT(o.id) AS totalOrders, -- Đếm tất cả đơn hàng
-            COALESCE(SUM(o.total_amount), 0) AS totalSpent, -- Tính tổng tiền tất cả đơn hàng
-            'active' AS status
-        FROM Users u
-        LEFT JOIN Orders o ON u.id = o.user_id 
-                         -- (Đã xóa bộ lọc status ở đây)
-        GROUP BY u.id -- Nhóm theo ID người dùng
-        ORDER BY u.created_at DESC
-    ";
+    SELECT 
+        u.id, 
+        CONCAT(u.first_name, ' ', u.last_name) AS name, 
+        u.email, 
+        u.phone, 
+        u.created_at AS joinDate,
+        COUNT(o.id) AS totalOrders,
+        COALESCE(SUM(o.total_amount), 0) AS totalSpent,
+        'active' AS status
+    FROM Users u
+    LEFT JOIN Orders o ON u.id = o.user_id
+    WHERE u.role = 'customer' 
+    GROUP BY u.id
+    ORDER BY u.created_at DESC
+";
+
 
     $result = $conn->query($sql);
     $customers = array();

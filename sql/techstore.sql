@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Máy chủ: 127.0.0.1
--- Thời gian đã tạo: Th10 20, 2025 lúc 03:23 PM
+-- Thời gian đã tạo: Th10 25, 2025 lúc 02:40 PM
 -- Phiên bản máy phục vụ: 10.4.32-MariaDB
 -- Phiên bản PHP: 8.0.30
 
@@ -40,8 +40,8 @@ CREATE TABLE `cartitems` (
 --
 
 INSERT INTO `cartitems` (`id`, `cart_id`, `variant_id`, `quantity`, `added_at`) VALUES
-(32, 4, 39, 1, '2025-11-20 13:46:27'),
-(33, 4, 57, 1, '2025-11-20 13:46:33');
+(49, 4, 58, 1, '2025-11-25 13:17:23'),
+(50, 4, 56, 1, '2025-11-25 13:17:26');
 
 -- --------------------------------------------------------
 
@@ -112,7 +112,8 @@ INSERT INTO `orderitems` (`id`, `order_id`, `variant_id`, `quantity`, `price_at_
 (22, 20, 57, 1, 11000000.00),
 (23, 21, 58, 1, 27500000.00),
 (24, 22, 62, 1, 25450000.00),
-(25, 23, 63, 1, 7000000.00);
+(25, 23, 63, 1, 7000000.00),
+(26, 24, 44, 1, 30000000.00);
 
 -- --------------------------------------------------------
 
@@ -154,7 +155,8 @@ INSERT INTO `orders` (`id`, `user_id`, `order_code`, `customer_first_name`, `cus
 (20, 8, 'ORD-9F4E33ED8F5B', 'Nguyễn Văn', 'An', 'an@gmail.com', '0905766893', '12 Nam Kì Khởi Nghĩa', 'Đà Nẵng', 'Ngũ Hành Sơn', 11000000.00, 0.00, 0.00, 11000000.00, 'cod', 'Đóng gói cẩn thận', 'completed', '2025-11-20 13:57:39'),
 (21, 9, 'ORD-DC43EE0E3521', 'Trần Văn', 'Tri', 'tri@gmail.com', '0908124760', '33 Trần Đại Nghĩa', 'Đà Nẵng', 'Ngũ Hành Sơn', 27500000.00, 0.00, 0.00, 27500000.00, 'cod', 'Vận chuyển cẩn thận', 'completed', '2025-11-20 14:04:31'),
 (22, 9, 'ORD-3ECCBEAB04DE', 'Trần Văn', 'Tri', 'tri@gmail.com', '0908124760', '33 Trần Đại Nghĩa', 'Đà Nẵng', 'Ngũ Hành Sơn', 25450000.00, 0.00, 0.00, 25450000.00, 'cod', 'Chú ý vận chuyển', 'completed', '2025-11-20 14:05:12'),
-(23, 9, 'ORD-F44F7015AF97', 'Trần Văn', 'Tri', 'tri@gmail.com', '0908124760', '33 Trần Đại Nghĩa', 'Đà Nẵng', 'Ngũ Hành Sơn', 7000000.00, 0.00, 0.00, 7000000.00, 'cod', 'Chú ý giao hàng cẩn thận', 'completed', '2025-11-20 14:06:04');
+(23, 9, 'ORD-F44F7015AF97', 'Trần Văn', 'Tri', 'tri@gmail.com', '0908124760', '33 Trần Đại Nghĩa', 'Đà Nẵng', 'Ngũ Hành Sơn', 7000000.00, 0.00, 0.00, 7000000.00, 'cod', 'Chú ý giao hàng cẩn thận', 'completed', '2025-11-20 14:06:04'),
+(24, 2, 'ORD-FFA35038070A', 'Nguyễn Phước', 'Thuần', 'thuan@gmail.com', '0985563320', '12 Nam Kì Khởi Nghĩa', 'Đà Nẵng', 'Ngũ Hành Sơn', 30000000.00, 0.00, 0.00, 30000000.00, 'cod', 'Chú ý cẩn thận', 'completed', '2025-11-25 13:21:06');
 
 -- --------------------------------------------------------
 
@@ -235,7 +237,12 @@ INSERT INTO `productimages` (`id`, `product_id`, `image_url`) VALUES
 (97, 32, 'http://localhost/techstore-api/uploads/prod_691f1a20dc45e7.68809799.webp'),
 (98, 32, 'http://localhost/techstore-api/uploads/prod_691f1a20dd7cd9.13581842.webp'),
 (99, 32, 'http://localhost/techstore-api/uploads/prod_691f1a20df37d9.28634930.webp'),
-(100, 32, 'http://localhost/techstore-api/uploads/prod_691f1a20e022e9.83364621.jpg');
+(100, 32, 'http://localhost/techstore-api/uploads/prod_691f1a20e022e9.83364621.jpg'),
+(106, 33, 'http://localhost/techstore-api/uploads/prod_691f2a2baa1815.94631682.jpg'),
+(107, 33, 'http://localhost/techstore-api/uploads/prod_691f2a2bab2e61.77614299.webp'),
+(108, 33, 'http://localhost/techstore-api/uploads/prod_691f2a2babbcc1.46453652.webp'),
+(109, 33, 'http://localhost/techstore-api/uploads/prod_691f2a2bac7b38.21719120.webp'),
+(110, 33, 'http://localhost/techstore-api/uploads/prod_691f2a2baceae0.15562879.webp');
 
 -- --------------------------------------------------------
 
@@ -268,7 +275,8 @@ INSERT INTO `products` (`id`, `category_id`, `name`, `description`, `brand`, `mo
 (29, 3, 'iPad Pro M4 11 inch', 'iPad Pro M4 là mẫu máy tính bảng cao cấp và chuyên nghiệp với chip M4 cho hiệu năng mạnh mẽ vượt bậc. Thế hệ iPad Pro mới còn sở hữu thiết kế mới mảnh mai hơn cùng màn hình Ultra Retina XDR siêu đẹp mắt để nâng tầm trải nghiệm. Tuy mỏng nhẹ hơn nhưng chiếc iPad Pro M4 11 inch mới này vẫn đảm bảo có thể hoạt động liên tục cả ngày với viên pin 31.29Wh.', 'Apple', 'IPDM4', 'active', '{\"processor\":\"Chip M4 - \\t CPU 9 lõi với 3 lõi hiệu năng và 6 lõi tiết kiệm điện\",\"ram\":\"8GB\",\"storage\":\"256 GB\",\"screen\":\"11 inch - Ultra Retina XDR.\"}', 'http://localhost/techstore-api/uploads/prod_691da5a0ed2808.41678709.webp'),
 (30, 1, 'Samsung Galaxy S25 Ultra', 'Samsung Galaxy S25 Ultra sở hữu thiết kế khung titanium cứng cáp, bền bỉ và sang trọng. Màn hình Dynamic AMOLED 2X 6,9 inch với độ sáng cao, màu sắc sống động và tần số quét 1–120Hz cho trải nghiệm mượt mà trong mọi tác vụ.\r\n\r\nMáy được trang bị camera chính 200MP, kết hợp cảm biến lớn và thuật toán AI mới, cho khả năng chụp đêm tốt hơn và zoom quang học chất lượng cao. Hệ thống camera phụ nâng cấp giúp quay video ổn định, rõ nét trong nhiều điều kiện.\r\n\r\nHiệu năng mạnh mẽ nhờ chip Snapdragon 8 Elite, tối ưu cho AI, chơi game và xử lý đa nhiệm. Pin dung lượng lớn mang lại thời gian sử dụng dài, hỗ trợ sạc nhanh và sạc không dây.\r\n\r\nGalaxy S25 Ultra tiếp tục hỗ trợ S Pen, giúp ghi chú, phác thảo và thao tác chính xác hơn. Tính năng AI thế hệ mới của Samsung giúp tăng trải nghiệm: dịch trực tiếp, chỉnh sửa ảnh thông minh, hỗ trợ công việc và sáng tạo.', 'Samsung', 'SSS25', 'active', '[\"Bộ xử lý: Snapdragon 8 Elite dành cho Galaxy (3nm)\",\"RAM: 12 GB\",\"Bộ nhớ: 256 GB\",\"Màn hình: 6.9 inches - Dynamic AMOLED 2X\"]', 'http://localhost/techstore-api/uploads/prod_691f15b2aee761.72513591.jpg'),
 (31, 1, 'Xiaomi 15 Ultra', 'Xiaomi 15 Ultra 16GB 512GB trang bị chip Snapdragon® 8 Elite mạnh mẽ và RAM lên đến 16GB, người dùng sẽ có trải nghiệm mượt mà và dung lượng lưu trữ 512GB. Thiết bị này được nâng cấp nhờ trang bị ống kính tele có độ phân giải cao đến 200 megapixel. Viên pin lớn 5410 mAh, sẽ giúp nâng cao thời gian dùng điện thoại của người dùng. Đồng thời, Mi 15 Ultra trang bị tấm nền AMOLED, sẽ đem lại chất lượng hiển thị nổi bật và chi tiết về màu sắc.', 'Xiaomi', 'XM15UT', 'active', '[\"Bộ xử lý: Snapdragon 8 Elite (Tiến trình sản xuất 3nm)\",\"RAM: 16 GB\",\"Bộ nhớ: 512 GB\",\"Màn hình: 6,73 inch - Công nghệ LTPO AMOLED\"]', 'http://localhost/techstore-api/uploads/prod_691f18a09cbe45.71284520.jpg'),
-(32, 4, 'Tai nghe Bluetooth Apple AirPods Pro 3 2025', 'AirPods Pro 3 ra mắt tháng 9/2025, mang đến bước tiến lớn với khả năng khử tiếng ồn chủ động gấp đôi thế hệ trước, thiết kế gọn nhẹ và pin bền bỉ vượt trội. Apple tích hợp cảm biến đo nhịp tim trực tiếp trên tai nghe, biến AirPods Pro thế hệ thứ 3 thành trợ lý sức khỏe thông minh cho người dùng.\r\n\r\nCùng với chất lượng âm thanh ấn tượng, Airpods Pro 3 hứa hẹn nâng tầm trải nghiệm nghe nhạc và giao tiếp hàng ngày.', 'Apple', 'APP3', 'active', '[\"Bộ xử lý: Chip Apple H2\"]', 'http://localhost/techstore-api/uploads/prod_691f1a20dba338.84085765.jpg');
+(32, 4, 'Tai nghe Bluetooth Apple AirPods Pro 3 2025', 'AirPods Pro 3 ra mắt tháng 9/2025, mang đến bước tiến lớn với khả năng khử tiếng ồn chủ động gấp đôi thế hệ trước, thiết kế gọn nhẹ và pin bền bỉ vượt trội. Apple tích hợp cảm biến đo nhịp tim trực tiếp trên tai nghe, biến AirPods Pro thế hệ thứ 3 thành trợ lý sức khỏe thông minh cho người dùng.\r\n\r\nCùng với chất lượng âm thanh ấn tượng, Airpods Pro 3 hứa hẹn nâng tầm trải nghiệm nghe nhạc và giao tiếp hàng ngày.', 'Apple', 'APP3', 'active', '[\"Bộ xử lý: Chip Apple H2\"]', 'http://localhost/techstore-api/uploads/prod_691f1a20dba338.84085765.jpg'),
+(33, 1, 'OPPO Find X9 12GB 256GB', 'OPPO Find X9 được trang bị chip Dimensity 9500 5G tối đa 4.21GHz cùng RAM 12GB mang đến hiệu năng mạnh mẽ, phục vụ nhu cầu đa nhiệm, chơi game và quay phim. Máy sở hữu màn hình AMOLED 6.59 inch, độ phân giải 1.5K (1256 x 2760), tần số quét 120Hz, hỗ trợ hiển thị hình ảnh sắc nét. Kèm theo đó là thiết kế viền siêu mỏng, tạo cho người dùng trải nghiệm thị giác đắm chìm.', 'OPPO', 'OPX9', 'active', '{\"processor\":\"Dimensity 9500 5G\",\"ram\":\"12GB\",\"storage\":\"256 GB\",\"screen\":\"6.59 inches\"}', 'http://localhost/techstore-api/uploads/prod_691f2a2baa1815.94631682.jpg');
 
 -- --------------------------------------------------------
 
@@ -307,7 +315,8 @@ INSERT INTO `productvariants` (`id`, `product_id`, `size`, `color_name`, `color_
 (60, 30, '256 GB', 'Đen', '#000000', 28000000.00, 30000000.00, 'SS-256-S25D', 22),
 (61, 30, '512 GB', 'Đen', '#000000', 30000000.00, 32000000.00, 'SS-512-S25D', 20),
 (62, 31, '512 GB', 'Bạc', '#c2c2c2', 25450000.00, 26000000.00, 'XM-512-15UT', 27),
-(63, 32, ' ', 'Trắng', '#ffffff', 7000000.00, 7800000.00, 'AP-PRO3-T25', 30);
+(63, 32, ' ', 'Trắng', '#ffffff', 7000000.00, 7800000.00, 'AP-PRO3-T25', 30),
+(65, 33, '256 GB', 'Đen', '#000000', 23000000.00, 25000000.00, 'OP-256-X9', 21);
 
 -- --------------------------------------------------------
 
@@ -353,17 +362,19 @@ CREATE TABLE `users` (
   `email` varchar(255) NOT NULL,
   `phone` varchar(20) DEFAULT NULL,
   `password_hash` varchar(255) NOT NULL,
-  `created_at` timestamp NOT NULL DEFAULT current_timestamp()
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
+  `role` enum('admin','customer') NOT NULL DEFAULT 'customer'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Đang đổ dữ liệu cho bảng `users`
 --
 
-INSERT INTO `users` (`id`, `first_name`, `last_name`, `email`, `phone`, `password_hash`, `created_at`) VALUES
-(2, 'Nguyễn Phước', 'Thuần', 'thuan@gmail.com', '0981664778', '$2y$10$0fbQePPU3ORubrRKU/Nl7ufb7Tz/v0zHM8To5pJ3v/SmWCGOWyxUy', '2025-11-03 03:11:53'),
-(8, 'Nguyễn Văn', 'An', 'an@gmail.com', '0905766893', '$2y$10$hG4pp1J2JRvruVEk504/bOyfwdNKlnNN3YXVJgolj3ZHRaL4tFAFq', '2025-11-20 13:53:32'),
-(9, 'Trần Văn', 'Tri', 'tri@gmail.com', '0908124760', '$2y$10$1PF2.DprIl25NvEXft2Nxu2HAyZDGxxXJ6AHuGBgd2aTMjlwxGL96', '2025-11-20 14:02:46');
+INSERT INTO `users` (`id`, `first_name`, `last_name`, `email`, `phone`, `password_hash`, `created_at`, `role`) VALUES
+(1, 'Admin', 'Admin', 'admin@gmail.com', '0985563341', '$2y$10$FcHMffjCnZrAgaFtGF55r.xwQudj7SqvwZNK1WbIOYsiRCNWjIlha', '2025-11-25 12:45:47', 'admin'),
+(2, 'Nguyễn Phước', 'Thuần', 'thuan@gmail.com', '0981664778', '$2y$10$0fbQePPU3ORubrRKU/Nl7ufb7Tz/v0zHM8To5pJ3v/SmWCGOWyxUy', '2025-11-03 03:11:53', 'customer'),
+(8, 'Nguyễn Văn', 'An', 'an@gmail.com', '0905766893', '$2y$10$hG4pp1J2JRvruVEk504/bOyfwdNKlnNN3YXVJgolj3ZHRaL4tFAFq', '2025-11-20 13:53:32', 'customer'),
+(9, 'Trần Văn', 'Tri', 'tri@gmail.com', '0908124760', '$2y$10$1PF2.DprIl25NvEXft2Nxu2HAyZDGxxXJ6AHuGBgd2aTMjlwxGL96', '2025-11-20 14:02:46', 'customer');
 
 --
 -- Chỉ mục cho các bảng đã đổ
@@ -460,13 +471,13 @@ ALTER TABLE `users`
 -- AUTO_INCREMENT cho bảng `cartitems`
 --
 ALTER TABLE `cartitems`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=40;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=51;
 
 --
 -- AUTO_INCREMENT cho bảng `carts`
 --
 ALTER TABLE `carts`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
 
 --
 -- AUTO_INCREMENT cho bảng `categories`
@@ -478,13 +489,13 @@ ALTER TABLE `categories`
 -- AUTO_INCREMENT cho bảng `orderitems`
 --
 ALTER TABLE `orderitems`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=26;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=27;
 
 --
 -- AUTO_INCREMENT cho bảng `orders`
 --
 ALTER TABLE `orders`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=24;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=25;
 
 --
 -- AUTO_INCREMENT cho bảng `passwordresets`
@@ -496,19 +507,19 @@ ALTER TABLE `passwordresets`
 -- AUTO_INCREMENT cho bảng `productimages`
 --
 ALTER TABLE `productimages`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=101;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=111;
 
 --
 -- AUTO_INCREMENT cho bảng `products`
 --
 ALTER TABLE `products`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=33;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=34;
 
 --
 -- AUTO_INCREMENT cho bảng `productvariants`
 --
 ALTER TABLE `productvariants`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=64;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=66;
 
 --
 -- AUTO_INCREMENT cho bảng `reviews`
@@ -520,7 +531,7 @@ ALTER TABLE `reviews`
 -- AUTO_INCREMENT cho bảng `users`
 --
 ALTER TABLE `users`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=10;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=13;
 
 --
 -- Các ràng buộc cho các bảng đã đổ

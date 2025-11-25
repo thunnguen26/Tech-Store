@@ -194,7 +194,7 @@ export function Header() {
     setUser(null);
     setIsMenuOpen(false);
     router.push('/');
-    alert("Bạn đã đăng xuất thành công!");
+    // alert("Bạn đã đăng xuất thành công!");
   };
 
   const handleSearch = (e: React.FormEvent) => {

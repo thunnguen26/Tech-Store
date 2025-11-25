@@ -246,15 +246,20 @@
       };
       
       try {
-        const result = await ProductService.updateProduct(product.id, productData);
-        
-        if (result.success) {
-          alert(result.message);
-          router.push("/admin/products");
-        } else {
-          setError(result.message);
-        }
-      } catch (err: any) {
+        // === GỌI API THẬT (ĐÃ BỎ COMMENT) ===
+        const result = await ProductService.updateProduct(product.id, productData);
+        
+        if (result.success) {
+          // Xóa các URL preview để tránh rò rỉ bộ nhớ
+          imagePreviews.forEach(url => {
+              if (url.startsWith('blob:')) URL.revokeObjectURL(url);
+          });
+          alert(result.message);
+          router.push("/admin/products");
+        } else {
+          setError(result.message);
+        }
+      } catch (err: any) {
         setError(err.message || "Đã xảy ra lỗi khi cập nhật sản phẩm.");
       } finally {
         setIsSubmitting(false);

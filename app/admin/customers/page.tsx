@@ -64,7 +64,7 @@ export default function CustomersManagement() {
           if (result.success) {
             // 2. Cập nhật state local CHỈ KHI API THÀNH CÔNG
             setCustomers(customers.filter(c => c.id !== customerId));
-            alert("Xóa khách hàng thành công!");
+    //         alert("Xóa khách hàng thành công!");
           } else {
             // 3. Hiển thị lỗi nếu API thất bại
             alert(result.message);

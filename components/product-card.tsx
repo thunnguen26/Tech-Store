@@ -61,7 +61,7 @@ export function ProductCard({
       const result = await CartService.addItem(variantToAdd.id, 1);
       
       if (result.success) {
-        alert("Đã thêm vào giỏ hàng!");
+        // alert("Đã thêm vào giỏ hàng!");
         // Cập nhật icon giỏ hàng trên Header
         window.dispatchEvent(new CustomEvent('cartUpdated'));
       } else {

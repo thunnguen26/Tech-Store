@@ -294,7 +294,7 @@ export default function ProductDetailPage() {
     setIsAddingToCart(true);
     const result = await CartService.addItem(currentVariant.id, quantity);
     if (result.success) {
-      alert("Đã thêm vào giỏ hàng!");
+      // alert("Đã thêm vào giỏ hàng!");
       window.dispatchEvent(new CustomEvent('cartUpdated'));
     } else {
       alert(`Lỗi: ${result.message}`);

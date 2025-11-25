@@ -1,12 +1,62 @@
-import type React from "react"
+// app/admin/layout.tsx
+'use client'
+
+import React, { useState, useEffect } from "react"
 import Link from "next/link"
-import { LayoutDashboard, Package, ShoppingCart, Users, Settings, BarChart3, Menu } from "lucide-react"
+import { useRouter } from "next/navigation"
+import { LayoutDashboard, Package, ShoppingCart, Users, Menu, LogOut, ArrowLeft } from "lucide-react"
+import { AuthService, User } from "@/services/AuthService"
 
 export default function AdminLayout({
   children,
 }: {
   children: React.ReactNode
 }) {
+  const router = useRouter()
+  const [isAuthorized, setIsAuthorized] = useState(false)
+  const [isLoading, setIsLoading] = useState(true)
+  const [user, setUser] = useState<User | null>(null)
+
+  // === 1. KIỂM TRA QUYỀN TRUY CẬP ===
+  useEffect(() => {
+    // Lấy thông tin người dùng từ localStorage
+    const currentUser = AuthService.getUser();
+    
+    // Kiểm tra: Có user không? Và role có phải là 'admin' không?
+    if (!currentUser || currentUser.role !== 'admin') {
+      // Nếu không phải admin -> Chuyển hướng về trang chủ
+      router.push('/'); 
+    } else {
+      // Nếu đúng là admin -> Cho phép vào
+      setUser(currentUser);
+      setIsAuthorized(true);
+    }
+    setIsLoading(false);
+  }, [router]);
+
+  const handleLogout = () => {
+    AuthService.logout(); 
+    router.push('/login');
+  }
+
+  // === 2. MÀN HÌNH LOADING (KHI ĐANG KIỂM TRA) ===
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-black flex items-center justify-center text-white">
+        <div className="flex flex-col items-center gap-3">
+          <div className="w-10 h-10 border-4 border-blue-600 border-t-transparent rounded-full animate-spin"></div>
+          <p>Đang kiểm tra quyền truy cập...</p>
+        </div>
+      </div>
+    )
+  }
+
+  // Nếu không có quyền, không hiển thị gì cả (đợi redirect)
+  if (!isAuthorized) {
+    return null;
+  }
+
+  // === 3. GIAO DIỆN ADMIN (KHI ĐÃ CÓ QUYỀN) ===
   return (
     <div className="min-h-screen bg-[#0a0a0a] text-gray-100">
       {/* Sidebar */}
@@ -56,13 +106,22 @@ export default function AdminLayout({
 
           {/* User Info */}
           <div className="border-t border-gray-800 p-4">
-            <div className="flex items-center gap-3">
-              <div className="h-10 w-10 rounded-full bg-gradient-to-br from-blue-500 to-purple-600" />
-              <div className="flex-1">
-                <p className="text-sm font-medium text-white">Admin</p>
-                <p className="text-xs text-gray-400">thuannp.24it@vku.udn.vn</p>
+            <div className="flex items-center gap-3 mb-3">
+              <div className="h-10 w-10 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center text-white font-bold">
+                {user?.name?.charAt(0) || 'A'}
+              </div>
+              <div className="flex-1 overflow-hidden">
+                <p className="text-sm font-medium text-white truncate">{user?.name || 'Admin'}</p>
+                <p className="text-xs text-gray-400 truncate">{user?.email}</p>
               </div>
             </div>
+            <button 
+              onClick={handleLogout}
+              className="flex w-full items-center gap-2 rounded-lg px-2 py-2 text-sm text-red-400 hover:bg-red-950/30 transition-colors"
+            >
+              <LogOut className="h-4 w-4" />
+              Đăng xuất
+            </button>
           </div>
         </div>
       </aside>
@@ -78,8 +137,9 @@ export default function AdminLayout({
           </div>
 
           <div className="flex items-center gap-4">
-            <Link href="/" className="text-sm text-gray-400 hover:text-white">
-              Xem trang web
+            <Link href="/" className="flex items-center gap-2 text-sm text-gray-400 hover:text-white transition-colors">
+              <ArrowLeft className="h-4 w-4" />
+              Về trang chủ
             </Link>
           </div>
         </header>

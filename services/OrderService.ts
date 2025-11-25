@@ -94,7 +94,7 @@ export type OrderStatus = 'pending' | 'processing' | 'shipped' | 'completed' | '
 export class OrderService {
 
   /**
-   * Lấy user_id từ localStorage (hàm nội bộ)
+   * Lấy user_id từ localStorage 
    */
   private static getUserId(): number | null {
     // Đảm bảo code chỉ chạy ở client
@@ -111,7 +111,7 @@ export class OrderService {
   }
 
   /**
-   * (FRONTEND) Gọi API create_order.php
+Gọi API create_order.php
    */
   static async createOrder(formData: CheckoutFormData): Promise<OrderResponse> { // 2. SỬA Kiểu trả về
       const userId = this.getUserId();
@@ -138,7 +138,7 @@ export class OrderService {
           success: true, 
           message: data.message, 
           order_code: data.order_code,
-          order_id: data.order_id // <-- THÊM DÒNG NÀY
+          order_id: data.order_id 
         };
   
       } catch (error) {
@@ -148,7 +148,7 @@ export class OrderService {
     }
 
   /**
-   * (FRONTEND) Lấy Lịch sử đơn hàng
+    Lấy Lịch sử đơn hàng
    */
   static async getUserOrders(): Promise<UserOrder[]> {
     const userId = this.getUserId();
@@ -167,9 +167,7 @@ export class OrderService {
     }
   }
 
-  /**
-   * (FRONTEND) Lấy chi tiết MỘT đơn hàng
-   */
+  
   static async getUserOrderDetails(orderId: string): Promise<UserOrderDetail | null> {
     const userId = this.getUserId();
     if (!userId) return null;
@@ -186,10 +184,8 @@ export class OrderService {
       return null;
     }
   }
-  
-  /**
-   * (ADMIN) Lấy TẤT CẢ đơn hàng
-   */
+ 
+
   static async getAdminOrders(): Promise<AdminOrder[]> {
     try {
       const response = await fetch(`${API_BASE_URL}/admin/admin_orders_get.php`); 
@@ -205,13 +201,8 @@ export class OrderService {
   }
 
 
-/**
-   * HÀM MỚI (ADMIN): Lấy chi tiết MỘT đơn hàng
-   */
 static async getAdminOrderDetails(orderId: string): Promise<UserOrderDetail | null> {
-  // (Chúng ta có thể tái sử dụng interface 'UserOrderDetail' vì cấu trúc dữ liệu trả về là như nhau)
   try {
-    // Gọi API mới trong thư mục /admin/
     const response = await fetch(`${API_BASE_URL}/admin/admin_order_details_get.php?order_id=${orderId}`);
     
     if (!response.ok) {
@@ -228,9 +219,7 @@ static async getAdminOrderDetails(orderId: string): Promise<UserOrderDetail | nu
   }
 }
 
-/**
-   * HÀM MỚI (ADMIN): Cập nhật trạng thái của MỘT đơn hàng
-   */
+
 static async updateOrderStatus(orderId: number, newStatus: OrderStatus): Promise<{ success: boolean; message: string }> {
   try {
     const response = await fetch(`${API_BASE_URL}/admin/admin_order_update_status.php`, {

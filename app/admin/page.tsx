@@ -1,11 +1,14 @@
-//app/admin/page.tsx
+// app/admin/page.tsx
 'use client'
 
 import { useState, useEffect } from "react"
 import { Card } from "@/components/ui/card"
 import { TrendingUp, DollarSign, ShoppingCart, Package, Users, AlertCircle } from "lucide-react"
 import { Line, LineChart, Bar, BarChart, ResponsiveContainer, XAxis, YAxis, CartesianGrid, Tooltip } from "recharts"
-import { AdminService, DashboardStats } from "@/services/AdminService"
+
+// 1. IMPORT SERVICE VÀ MODEL (ĐÚNG CHUẨN MVC)
+import { AdminService } from "@/services/AdminService"
+import { DashboardStats } from "@/models/Order.model" // Import từ Model
 
 // Định dạng tiền tệ
 const formatCurrency = (value: number) => {
@@ -221,7 +224,8 @@ export default function AdminDashboard() {
               </thead>
               <tbody className="text-sm">
                 {stats.topProducts.length > 0 ? (
-                  stats.topProducts.map((product, index) => (
+                  // 2. ĐỊNH NGHĨA KIỂU DỮ LIỆU CHO product VÀ index
+                  stats.topProducts.map((product: any, index: number) => (
                     <tr key={index} className="border-b border-gray-800/50">
                       <td className="py-4 text-white">{product.name}</td>
                       <td className="py-4 text-gray-300">{product.sold} sản phẩm</td>

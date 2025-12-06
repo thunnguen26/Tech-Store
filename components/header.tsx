@@ -1,232 +1,38 @@
-// components/header.tsx
+//components/header.tsx
 'use client'
 
-import { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
-import { useRouter } from 'next/navigation';
-import { Search, ShoppingCart, User, LogIn, LogOut, Menu, X, ChevronDown } from 'lucide-react';
+import { Search, ShoppingCart, LogIn, LogOut, Menu, X, ChevronDown } from 'lucide-react';
 import { Button } from "@/components/ui/button";
-
-interface UserData {
-  id: number;
-  firstName: string;
-  lastName: string;
-}
-
-interface Category {
-  id: number;
-  name: string;
-  count: number;
-}
-
-interface SearchProduct {
-  id: number;
-  name: string;
-  base_image: string;
-  price: number;
-  category_name: string;
-}
+// Import Hooks
+import { useHeaderLogic } from '@/hooks/useHeaderLogic';
+import { useProductSearch } from '@/hooks/useProductSearch';
 
 export function Header() {
-  const [user, setUser] = useState<UserData | null>(null);
-  const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const [searchQuery, setSearchQuery] = useState('');
-  const [isScrolled, setIsScrolled] = useState(false);
-  const [showCategoryDropdown, setShowCategoryDropdown] = useState(false);
-  const [showSearchResults, setShowSearchResults] = useState(false);
-  const [searchResults, setSearchResults] = useState<SearchProduct[]>([]);
-  const [isSearching, setIsSearching] = useState(false);
-  const [categories, setCategories] = useState<Category[]>([]);
-  const [cartCount, setCartCount] = useState(0);
-  const categoryTimeoutRef = useRef<NodeJS.Timeout | null>(null);
-  const searchTimeoutRef = useRef<NodeJS.Timeout | null>(null);
-  const searchRef = useRef<HTMLDivElement>(null);
-  const router = useRouter();
+  // 1. Gọi Logic chung
+  const {
+    user, handleLogout,
+    cartCount,
+    categories,
+    isScrolled,
+    isMenuOpen, setIsMenuOpen,
+    showCategoryDropdown, setShowCategoryDropdown,
+    handleMouseEnterCategory, handleMouseLeaveCategory
+  } = useHeaderLogic();
 
-  useEffect(() => {
-    if (typeof window !== 'undefined') {
-      const userDataString = localStorage.getItem('techstore_user');
-      if (userDataString) {
-        try {
-          setUser(JSON.parse(userDataString));
-        } catch (e) {
-          console.error("Lỗi đọc dữ liệu người dùng:", e);
-          localStorage.removeItem('techstore_user');
-        }
-      }
-    }
-  }, []);
-
-  // Fetch categories
-  useEffect(() => {
-    const fetchCategories = async () => {
-      try {
-        // Import ProductService để dùng API có sẵn
-        const { ProductService } = await import('@/services/ProductService');
-        const data = await ProductService.getCategories();
-        setCategories(data);
-      } catch (error) {
-        console.error("Lỗi tải danh mục:", error);
-        // Fallback với danh mục mặc định nếu API lỗi
-        setCategories([
-          { id: 1, name: 'Điện thoại', count: 0 },
-          { id: 2, name: 'Laptop', count: 0 },
-          { id: 3, name: 'Máy tính bảng', count: 0 },
-          { id: 4, name: 'Phụ kiện', count: 0 }
-        ]);
-      }
-    };
-    fetchCategories();
-  }, []);
-
-  // Fetch cart count
-  useEffect(() => {
-    const fetchCartCount = async () => {
-      try {
-        const { CartService } = await import('@/services/CartService');
-        const cartItems = await CartService.getCart();
-        setCartCount(cartItems.length);
-      } catch (error) {
-        console.error("Lỗi tải giỏ hàng:", error);
-      }
-    };
-
-    fetchCartCount();
-
-    // Lắng nghe sự kiện cập nhật giỏ hàng
-    const handleCartUpdate = () => {
-      fetchCartCount();
-    };
-
-    window.addEventListener('cartUpdated', handleCartUpdate);
-    
-    return () => {
-      window.removeEventListener('cartUpdated', handleCartUpdate);
-    };
-  }, []);
-
-  // Search products with debounce
-  useEffect(() => {
-    if (searchQuery.trim().length < 2) {
-      setSearchResults([]);
-      setShowSearchResults(false);
-      return;
-    }
-
-    setIsSearching(true);
-
-    if (searchTimeoutRef.current) {
-      clearTimeout(searchTimeoutRef.current);
-    }
-
-    searchTimeoutRef.current = setTimeout(async () => {
-      try {
-        const { ProductService } = await import('@/services/ProductService');
-        const allProducts = await ProductService.getAllProducts();
-        
-        // Lọc sản phẩm theo từ khóa tìm kiếm
-        const filtered = allProducts
-          .filter(product => 
-            product.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-            product.category_name.toLowerCase().includes(searchQuery.toLowerCase())
-          )
-          .slice(0, 5) // Giới hạn 5 kết quả
-          .map(product => ({
-            id: product.id,
-            name: product.name,
-            base_image: product.base_image || '/placeholder.svg',
-            price: product.variants[0]?.price || 0,
-            category_name: product.category_name
-          }));
-
-        setSearchResults(filtered);
-        setShowSearchResults(filtered.length > 0);
-      } catch (error) {
-        console.error("Lỗi tìm kiếm:", error);
-      } finally {
-        setIsSearching(false);
-      }
-    }, 300); // Debounce 300ms
-
-    return () => {
-      if (searchTimeoutRef.current) {
-        clearTimeout(searchTimeoutRef.current);
-      }
-    };
-  }, [searchQuery]);
-
-  // Click outside to close search results
-  useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
-      if (searchRef.current && !searchRef.current.contains(event.target as Node)) {
-        setShowSearchResults(false);
-      }
-    };
-
-    document.addEventListener('mousedown', handleClickOutside);
-    return () => document.removeEventListener('mousedown', handleClickOutside);
-  }, []);
-
-  useEffect(() => {
-    const handleResize = () => {
-      if (window.innerWidth >= 768) {
-        setIsMenuOpen(false);
-      }
-    };
-    window.addEventListener('resize', handleResize);
-    return () => window.removeEventListener('resize', handleResize);
-  }, []);
-
-  useEffect(() => {
-    const handleScroll = () => {
-      if (window.scrollY > 50) {
-        setIsScrolled(true);
-      } else {
-        setIsScrolled(false);
-      }
-    };
-    window.addEventListener('scroll', handleScroll);
-    return () => window.removeEventListener('scroll', handleScroll);
-  }, []);
-
-  const handleLogout = () => {
-    localStorage.removeItem('techstore_user');
-    setUser(null);
-    setIsMenuOpen(false);
-    router.push('/');
-    // alert("Bạn đã đăng xuất thành công!");
-  };
-
-  const handleSearch = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (searchQuery.trim()) {
-      router.push(`/products?search=${encodeURIComponent(searchQuery)}`);
-      setSearchQuery('');
-      setShowSearchResults(false);
-    }
-  };
-
-  const handleProductClick = (productId: number) => {
-    setShowSearchResults(false);
-    setSearchQuery('');
-    router.push(`/products/${productId}`);
-  };
-
-  const handleMouseEnterCategory = () => {
-    if (categoryTimeoutRef.current) {
-      clearTimeout(categoryTimeoutRef.current);
-    }
-    setShowCategoryDropdown(true);
-  };
-
-  const handleMouseLeaveCategory = () => {
-    categoryTimeoutRef.current = setTimeout(() => {
-      setShowCategoryDropdown(false);
-    }, 200);
-  };
+  // 2. Gọi Logic tìm kiếm
+  const {
+    searchQuery, setSearchQuery,
+    searchResults,
+    showSearchResults, setShowSearchResults,
+    isSearching,
+    searchRef,
+    handleSearchSubmit,
+    handleProductClick
+  } = useProductSearch();
 
   return (
-    <header className={`sticky top-0 z-50 w-full  transition-all duration-300 ${
+    <header className={`sticky top-0 z-50 w-full transition-all duration-300 ${
       isScrolled 
         ? 'bg-black/30 backdrop-blur-md shadow-lg border-gray-800' 
         : 'bg-black/95 backdrop-blur-sm shadow-md border-gray-800'
@@ -288,7 +94,7 @@ export function Header() {
           </nav>
 
           {/* Desktop Search Bar with Autocomplete */}
-          <form onSubmit={handleSearch} className="hidden lg:flex items-center flex-1 max-w-md mx-6">
+          <form onSubmit={handleSearchSubmit} className="hidden lg:flex items-center flex-1 max-w-md mx-6">
             <div ref={searchRef} className="relative w-full">
               <input
                 type="text"
@@ -316,6 +122,7 @@ export function Header() {
                           key={product.id}
                           onClick={() => handleProductClick(product.id)}
                           className="w-full flex items-center gap-4 p-3 hover:bg-gray-50 transition-colors border-b border-gray-100 last:border-b-0"
+                          type="button" // Important: type button để không submit form
                         >
                           <img 
                             src={product.base_image} 
@@ -332,7 +139,8 @@ export function Header() {
                         </button>
                       ))}
                       <button
-                        onClick={handleSearch}
+                        onClick={handleSearchSubmit}
+                        type="button"
                         className="w-full p-3 text-sm text-blue-600 hover:bg-blue-50 transition-colors font-medium"
                       >
                         Xem tất cả kết quả →
@@ -384,7 +192,7 @@ export function Header() {
 
           {/* Mobile Icons */}
           <div className="flex md:hidden items-center gap-3">
-            <Link href="/search" className="text-gray-300">
+            <Link href="/products" className="text-gray-300">
               <Search className="h-5 w-5" />
             </Link>
             <Link href="/cart" className="relative text-gray-300">

@@ -7,38 +7,38 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/com
 import { Button } from "@/components/ui/button"
 import { Label } from "@/components/ui/label"
 import { Badge } from "@/components/ui/badge"
-import { ArrowLeft, User, Mail, Phone, Home, Truck, AlertCircle, Package } from "lucide-react"
+import { ArrowLeft, User, Mail, Phone, Home, Truck, AlertCircle } from "lucide-react"
 import Image from "next/image"
 import Link from "next/link"
 
-// 1. IMPORT SERVICE VÀ TYPE
-import { OrderService, UserOrderDetail, OrderItemDetail, OrderStatus } from "@/services/OrderService"
+// 1. IMPORT CHUẨN MVC (QUAN TRỌNG)
+import { OrderService } from "@/services/OrderService"
+import { UserOrderDetail, OrderItemDetail, OrderStatus } from "@/models/Order.model" // <-- Lấy từ Model
 
-// (Copy hàm getStatusDisplay từ trang trước)
+// Hàm hiển thị trạng thái
 const getStatusDisplay = (status: string) => {
-  switch (status) {
+  switch (status) {
     case 'completed': return <Badge className="bg-green-500/10 text-green-400">Đã giao</Badge>;
-    case 'pending': return <Badge className="bg-yellow-500/10 text-yellow-400">Chờ xử lý</Badge>;
-    case 'processing': return <Badge className="bg-blue-500/10 text-blue-400">Đang xử lý</Badge>;
-    case 'shipped': return <Badge className="bg-indigo-500/10 text-indigo-400">Đang giao</Badge>;
-    case 'cancelled': return <Badge className="bg-red-500/10 text-red-400">Đã hủy</Badge>;
-    default: return <Badge variant="secondary">Không rõ</Badge>;
-  }
+    case 'pending': return <Badge className="bg-yellow-500/10 text-yellow-400">Chờ xử lý</Badge>;
+    case 'processing': return <Badge className="bg-blue-500/10 text-blue-400">Đang xử lý</Badge>;
+    case 'shipped': return <Badge className="bg-indigo-500/10 text-indigo-400">Đang giao</Badge>;
+    case 'cancelled': return <Badge className="bg-red-500/10 text-red-400">Đã hủy</Badge>;
+    default: return <Badge variant="secondary">Không rõ</Badge>;
+  }
 };
 
 export default function AdminOrderDetailPage() {
   const [orderData, setOrderData] = useState<UserOrderDetail | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-// === STATE MỚI ĐỂ CẬP NHẬT ===
-const [currentStatus, setCurrentStatus] = useState<OrderStatus>('pending');
-const [isUpdating, setIsUpdating] = useState(false);
-
+  
+  const [currentStatus, setCurrentStatus] = useState<OrderStatus>('pending');
+  const [isUpdating, setIsUpdating] = useState(false);
+  
   const router = useRouter();
   const params = useParams();
-  const id = Array.isArray(params.id) ? params.id[0] : params.id as string;
+  const id = Array.isArray(params.id) ? params.id[0] : params.id;
 
-  // 2. DÙNG useEffect ĐỂ GỌI API MỚI
   useEffect(() => {
     if (!id) return;
 
@@ -46,11 +46,12 @@ const [isUpdating, setIsUpdating] = useState(false);
       setIsLoading(true);
       setError(null);
       try {
-        const data = await OrderService.getAdminOrderDetails(id); // Gọi hàm Admin
+        const data = await OrderService.getAdminOrderDetails(id); 
         if (!data) {
           setError("Không thể tải chi tiết đơn hàng.");
         } else {
           setOrderData(data);
+          setCurrentStatus(data.details.status); 
         }
       } catch (err) {
         setError("Lỗi kết nối máy chủ.");
@@ -61,7 +62,6 @@ const [isUpdating, setIsUpdating] = useState(false);
     fetchOrderDetails();
   }, [id, router]);
 
-  // === 3. HÀM MỚI ĐỂ XỬ LÝ CẬP NHẬT ===
   const handleStatusChange = async (e: React.ChangeEvent<HTMLSelectElement>) => {
     const newStatus = e.target.value as OrderStatus;
     
@@ -73,56 +73,72 @@ const [isUpdating, setIsUpdating] = useState(false);
     const result = await OrderService.updateOrderStatus(orderData.details.id, newStatus);
     
     if (result.success) {
-      setCurrentStatus(newStatus); // Cập nhật UI
+      setCurrentStatus(newStatus); 
       alert(result.message);
     } else {
       setError(result.message);
-      // Rollback (trả lại) lựa chọn nếu API thất bại
+      // Rollback
       e.target.value = currentStatus;
     }
     setIsUpdating(false);
   };
 
-  // 3. HIỂN THỊ LOADING
   if (isLoading) {
     return (
-      <div className="flex items-center justify-center py-20">
+      <div className="flex justify-center items-center h-[80vh]">
         <div className="w-12 h-12 border-4 border-blue-500/30 border-t-blue-500 rounded-full animate-spin"></div>
       </div>
     );
   }
 
-  // 4. HIỂN THỊ LỖI
   if (error || !orderData) {
     return (
-      <div className="text-center py-20 text-red-400">
-        <AlertCircle className="mx-auto h-10 w-10 mb-4" />
-        <p className="text-lg mb-2">{error || "Không tìm thấy đơn hàng"}</p>
-        <Button asChild variant="link" className="text-blue-400 hover:text-blue-300">
-          <Link href="/admin/orders">Quay lại danh sách</Link>
-        </Button>
+      <div className="space-y-6">
+        <div className="flex items-center gap-4">
+          <Link href="/admin/orders">
+            <Button variant="ghost" size="sm" className="text-gray-400 hover:text-white">
+              <ArrowLeft className="mr-2 h-4 w-4" />
+              Quay lại
+            </Button>
+          </Link>
+          <h1 className="text-3xl font-bold text-white">Lỗi</h1>
+        </div>
+        <div className="flex flex-col items-center justify-center py-12 text-red-400">
+          <AlertCircle className="mb-2 h-12 w-12" />
+          <p>{error || "Không tìm thấy đơn hàng"}</p>
+        </div>
       </div>
     );
   }
 
   const { details, items } = orderData;
 
-  // 5. HIỂN THỊ CHI TIẾT
   return (
     <div className="space-y-6">
       {/* Header */}
       <div className="flex items-center gap-4">
-        <Link href="/admin/orders">
-          <Button variant="ghost" size="sm" className="text-gray-400 hover:text-white">
-            <ArrowLeft className="mr-2 h-4 w-4" />
-            Quay lại
-          </Button>
-        </Link>
-        <div>
-          <h1 className="text-3xl font-bold text-white">Chi tiết Đơn hàng</h1>
-          <p className="text-gray-400 mt-1">Mã đơn: <span className="text-blue-400 font-medium">{details.order_code}</span></p>
-        </div>
-      </div>
+        <Link href="/admin/orders">
+          <Button variant="ghost" size="sm" className="text-gray-400 hover:text-white">
+            <ArrowLeft className="mr-2 h-4 w-4" />
+            Quay lại
+          </Button>
+        </Link>
+        <div>
+          <h1 className="text-3xl font-bold text-white">Chi tiết Đơn hàng</h1>
+          <p className="text-gray-400 mt-1">Mã đơn: <span className="text-blue-400 font-medium">{details.order_code}</span></p>
+        </div>
+      </div>
+
+      {/* Error Alert */}
+      {error && (
+        <div className="flex items-center gap-3 rounded-lg bg-red-950/50 border border-red-900 p-4">
+          <AlertCircle className="h-5 w-5 text-red-400 flex-shrink-0" />
+          <div>
+            <p className="text-sm font-medium text-red-400">Lỗi</p>
+            <p className="text-sm text-red-300">{error}</p>
+          </div>
+        </div>
+      )}
 
       {/* Main Content */}
       <Card className="border-gray-800 bg-gray-950">
@@ -134,6 +150,7 @@ const [isUpdating, setIsUpdating] = useState(false);
                 Đặt lúc: {new Date(details.created_at).toLocaleString('vi-VN')}
               </CardDescription>
             </div>
+            
             <div className="flex items-center gap-2">
               <Label htmlFor="status" className="text-sm text-gray-400">Trạng thái:</Label>
               <select
@@ -151,7 +168,6 @@ const [isUpdating, setIsUpdating] = useState(false);
               </select>
             </div>
           </div>
-          
         </CardHeader>
         <CardContent className="pt-6 grid grid-cols-1 lg:grid-cols-3 gap-6">
           
@@ -196,11 +212,11 @@ const [isUpdating, setIsUpdating] = useState(false);
               <CardContent className="space-y-3">
                 <div className="flex justify-between text-gray-300">
                   <span>Tạm tính:</span>
-                  <span>{Math.round(details.subtotal).toLocaleString("vi-VN")}₫</span>
+                  <span>{Math.round(details.subtotal || details.total_amount).toLocaleString("vi-VN")}₫</span>
                 </div>
                 <div className="flex justify-between text-gray-300">
                   <span>Phí vận chuyển:</span>
-                  <span>{Math.round(details.shipping_fee).toLocaleString("vi-VN")}₫</span>
+                  <span>{Math.round(details.shipping_fee || 0).toLocaleString("vi-VN")}₫</span>
                 </div>
                 <div className="flex justify-between font-bold text-lg text-white border-t border-gray-700 pt-3 mt-3">
                   <span>Tổng cộng:</span>

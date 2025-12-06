@@ -12,7 +12,8 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/com
 import { User, Mail, Phone, Calendar, Package } from "lucide-react"
 import Link from "next/link"
 
-import { AuthService, FullUserData } from "@/services/AuthService"
+import { AuthService } from "@/services/AuthService"
+import { FullUserData } from "@/models/User.model"
 
 export default function AccountPage() {
   const [user, setUser] = useState<FullUserData | null>(null);

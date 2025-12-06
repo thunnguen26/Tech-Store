@@ -10,7 +10,9 @@ import { Input } from "@/components/ui/input"
 import { Minus, Plus, X, ShoppingBag, ArrowRight, Tag, Truck, Shield, Package, CheckSquare, Square } from "lucide-react"
 import Image from "next/image"
 import Link from "next/link"
-import { CartService, type CartItem } from "@/services/CartService"
+
+import { CartService } from "@/services/CartService"
+import { CartItem } from "@/models/Cart.model"
 
 export default function CartPage() {
   const [cartItems, setCartItems] = useState<CartItem[]>([])

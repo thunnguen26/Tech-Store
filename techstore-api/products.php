@@ -1,28 +1,23 @@
 <?php
 // htdocs/techstore-api/products.php
 
-// === HEADER ===
-// Cho phép Next.js (chạy ở localhost:3000) gọi API này
 header("Access-Control-Allow-Origin: http://localhost:3000");
 // Báo cho trình duyệt biết đây là dữ liệu JSON
 header("Content-Type: application/json; charset=UTF-8");
 
-// === KẾT NỐI CSDL ===
 $servername = "localhost";
 $username = "root";
-$password = ""; // Mật khẩu XAMPP của bạn (thường là rỗng)
-$dbname = "techstore"; // Tên CSDL của bạn
+$password = "";
+$dbname = "techstore";
 
 $conn = new mysqli($servername, $username, $password, $dbname);
 
-// Đặt UTF-8 để không bị lỗi font tiếng Việt
 $conn->set_charset("utf8mb4");
 
 if ($conn->connect_error) {
   die("Connection failed: " . $conn->connect_error);
 }
 
-// === XỬ LÝ LOGIC ===
 try {
     // 1. Lấy tất cả sản phẩm gốc (Products) và tên danh mục (Categories)
     $sql_products = "
@@ -43,11 +38,11 @@ try {
     $products_list = array();
 
     if ($result_products->num_rows > 0) {
-        // 2. Lặp qua từng sản phẩm gốc
+        //  Lặp qua từng sản phẩm gốc
         while($product_row = $result_products->fetch_assoc()) {
             $product_id = $product_row['id'];
             
-            // 3. Lấy tất cả Biến thể (Variants) của sản phẩm này
+            // Lấy tất cả Biến thể (Variants) của sản phẩm này
             $sql_variants = "
                 SELECT * FROM ProductVariants 
                 WHERE product_id = $product_id
@@ -63,7 +58,7 @@ try {
                 }
             }
             
-            // 4. Lấy tất cả Ảnh (Images) của sản phẩm này
+            // Lấy tất cả Ảnh (Images) của sản phẩm này
             $sql_images = "
                 SELECT image_url FROM ProductImages 
                 WHERE product_id = $product_id
@@ -76,7 +71,7 @@ try {
                 }
             }
 
-            // 5. Lấy Đánh giá (Reviews) của sản phẩm này
+            // Lấy Đánh giá (Reviews) của sản phẩm này
             $sql_reviews = "
                 SELECT AVG(rating) AS average_rating, COUNT(id) AS review_count 
                 FROM Reviews 
@@ -85,7 +80,7 @@ try {
             $result_reviews = $conn->query($sql_reviews);
             $review_data = $result_reviews->fetch_assoc();
 
-            // 6. Gom tất cả dữ liệu lại
+            // Gom tất cả dữ liệu lại
             $product_data = $product_row;
             $product_data['variants'] = $variants;
             $product_data['images'] = $images;
@@ -97,12 +92,10 @@ try {
         }
     }
     
-    // === TRẢ VỀ KẾT QUẢ ===
     // Trả về mảng JSON chứa tất cả sản phẩm
     echo json_encode($products_list);
 
 } catch (Exception $e) {
-    // Trả về lỗi nếu có
     http_response_code(500);
     echo json_encode(array("message" => "Lỗi máy chủ: " . $e->getMessage()));
 }

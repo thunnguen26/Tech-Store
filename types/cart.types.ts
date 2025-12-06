@@ -1,3 +1,4 @@
+//types/cart.types.ts
 export interface ICartItem {
   id: string
   name: string

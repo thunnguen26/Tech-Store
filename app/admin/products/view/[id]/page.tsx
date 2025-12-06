@@ -4,13 +4,15 @@
 import { useState, useEffect } from "react"
 import { Card } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
-import { Badge } from "@/components/ui/badge"
+import { Badge } from "@/components/ui/badge" // Kiểm tra file này export default hay named
 import { ArrowLeft, Edit, AlertCircle, Package, DollarSign, Box, TrendingUp } from "lucide-react"
 import Link from "next/link"
 import { useRouter, useParams } from "next/navigation"
 import Image from "next/image"
 
-import { ProductService, AdminProductDetails } from "@/services/ProductService"
+// Import chuẩn MVC
+import { ProductService } from "@/services/ProductService"
+import { AdminProductDetails } from "@/models/Product.model"
 
 export default function ViewProductPage() {
   const params = useParams();
@@ -75,14 +77,36 @@ export default function ViewProductPage() {
   
   // Tính toán thống kê
   const totalStock = variants.reduce((sum, v) => sum + v.stock_quantity, 0);
-  const minPrice = Math.min(...variants.map(v => v.price));
-  const maxPrice = Math.max(...variants.map(v => v.price));
-  const avgPrice = variants.reduce((sum, v) => sum + v.price, 0) / variants.length;
+  const minPrice = variants.length > 0 ? Math.min(...variants.map(v => v.price)) : 0;
+  const maxPrice = variants.length > 0 ? Math.max(...variants.map(v => v.price)) : 0;
+  const avgPrice = variants.length > 0 ? variants.reduce((sum, v) => sum + v.price, 0) / variants.length : 0;
   
-  // Parse features
-  const features = typeof product.features === 'string' 
-    ? JSON.parse(product.features) 
-    : product.features || {};
+  // === SỬA LỖI PARSE FEATURES (Giống trang Edit) ===
+  let features: any = {};
+  
+  if (Array.isArray(product.features)) {
+    // Nếu là mảng chuỗi ["Ram: 8GB", ...]
+    product.features.forEach((item: any) => {
+        const str = String(item);
+        const sep = str.indexOf(':');
+        if (sep !== -1) {
+            const key = str.substring(0, sep).trim().toLowerCase();
+            const val = str.substring(sep + 1).trim();
+            if (key.includes('xử lý') || key.includes('cpu')) features.processor = val;
+            else if (key.includes('ram')) features.ram = val;
+            else if (key.includes('nhớ') || key.includes('storage')) features.storage = val;
+            else if (key.includes('hình') || key.includes('screen')) features.screen = val;
+        }
+    });
+  } else if (typeof product.features === 'string') {
+    try {
+        const parsed = JSON.parse(product.features);
+        if (!Array.isArray(parsed)) features = parsed;
+    } catch (e) {}
+  } else if (typeof product.features === 'object' && product.features !== null) {
+    features = product.features;
+  }
+  // =================================================
 
   return (
     <div className="space-y-6">
@@ -129,7 +153,7 @@ export default function ViewProductPage() {
             </div>
             <div>
               <div className="text-sm text-gray-400">Giá trung bình</div>
-              <div className="text-2xl font-bold text-white">{avgPrice.toLocaleString('vi-VN')}₫</div>
+              <div className="text-2xl font-bold text-white">{Math.round(avgPrice).toLocaleString('vi-VN')}₫</div>
             </div>
           </div>
         </Card>
@@ -301,38 +325,40 @@ export default function ViewProductPage() {
             </div>
           </Card>
 
-          {/* Technical Specs */}
-          {Object.keys(features).length > 0 && (
-            <Card className="border-gray-800 bg-gray-950 p-6">
-              <h3 className="text-lg font-semibold text-white mb-4">Thông số kỹ thuật</h3>
-              <div className="space-y-3">
-                {features.processor && (
-                  <div>
-                    <div className="text-sm text-gray-400">Bộ xử lý</div>
-                    <div className="mt-1 text-white">{features.processor}</div>
-                  </div>
-                )}
-                {features.ram && (
-                  <div>
-                    <div className="text-sm text-gray-400">RAM</div>
-                    <div className="mt-1 text-white">{features.ram}</div>
-                  </div>
-                )}
-                {features.storage && (
-                  <div>
-                    <div className="text-sm text-gray-400">Bộ nhớ</div>
-                    <div className="mt-1 text-white">{features.storage}</div>
-                  </div>
-                )}
-                {features.screen && (
-                  <div>
-                    <div className="text-sm text-gray-400">Màn hình</div>
-                    <div className="mt-1 text-white">{features.screen}</div>
-                  </div>
-                )}
-              </div>
-            </Card>
-          )}
+          {/* Technical Specs - ĐÃ SỬA LỖI HIỂN THỊ */}
+          <Card className="border-gray-800 bg-gray-950 p-6">
+            <h3 className="text-lg font-semibold text-white mb-4">Thông số kỹ thuật</h3>
+            <div className="space-y-3">
+              {features.processor && (
+                <div>
+                  <div className="text-sm text-gray-400">Bộ xử lý</div>
+                  <div className="mt-1 text-white">{features.processor}</div>
+                </div>
+              )}
+              {features.ram && (
+                <div>
+                  <div className="text-sm text-gray-400">RAM</div>
+                  <div className="mt-1 text-white">{features.ram}</div>
+                </div>
+              )}
+              {features.storage && (
+                <div>
+                  <div className="text-sm text-gray-400">Bộ nhớ</div>
+                  <div className="mt-1 text-white">{features.storage}</div>
+                </div>
+              )}
+              {features.screen && (
+                <div>
+                  <div className="text-sm text-gray-400">Màn hình</div>
+                  <div className="mt-1 text-white">{features.screen}</div>
+                </div>
+              )}
+              {/* Nếu không có thông số nào */}
+              {!features.processor && !features.ram && !features.storage && !features.screen && (
+                 <p className="text-sm text-gray-500">Chưa có thông tin kỹ thuật.</p>
+              )}
+            </div>
+          </Card>
 
           {/* Stock Alert */}
           {totalStock < 20 && (

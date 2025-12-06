@@ -1,3 +1,4 @@
+//types/product.types.ts
 export interface IProduct {
   id: string
   name: string

@@ -9,7 +9,9 @@ import { Plus, Search, Edit, Trash2, Eye, AlertCircle } from "lucide-react"
 import Link from "next/link"
 import Image from "next/image"
 
-import { ProductService, AdminProduct } from "@/services/ProductService"
+// 1. SỬA IMPORT CHUẨN MVC
+import { ProductService } from "@/services/ProductService"
+import { AdminProduct } from "@/models/Product.model" // <-- Lấy từ Model
 
 type ProductCategory = "all" | "phone" | "laptop" | "tablet" | "accessory"
 type ProductStatus = "all" | "active" | "out_of_stock" | "draft"

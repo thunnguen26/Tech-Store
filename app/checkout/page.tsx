@@ -1,8 +1,7 @@
 // app/checkout/page.tsx
-"use client"
+'use client'
 
-import type React from "react"
-import { useState, useEffect } from "react"
+import React, { useState, useEffect } from "react" // Thêm React
 import { Header } from "@/components/header"
 import { Footer } from "@/components/footer"
 import { Button } from "@/components/ui/button"
@@ -13,11 +12,15 @@ import { CreditCard, Wallet, Building2, CheckCircle2, AlertCircle } from "lucide
 import Image from "next/image"
 import Link from "next/link"
 
-import { CartService, type CartItem } from "@/services/CartService"
-import { OrderService, type CheckoutFormData } from "@/services/OrderService"
+// 1. IMPORT SERVICE VÀ MODEL (QUAN TRỌNG)
+import { CartService } from "@/services/CartService"
+import { OrderService } from "@/services/OrderService"
+import { CheckoutFormData } from "@/models/Order.model"
+import { CartItem } from "@/models/Cart.model" // Để sửa lỗi 'item' implicitly has an 'any' type
 
 export default function CheckoutPage() {
-  const [cartItems, setCartItems] = useState<CartItem[]>([])
+  // State
+  const [cartItems, setCartItems] = useState<CartItem[]>([]) // Định nghĩa kiểu CartItem[]
   const [selectedIds, setSelectedIds] = useState<Set<number>>(new Set())
   const [isLoading, setIsLoading] = useState(true)
   const [paymentMethod, setPaymentMethod] = useState("cod")
@@ -41,11 +44,18 @@ export default function CheckoutPage() {
 
       if (selectedIdsJson) {
         try {
-          idsToCheckout = new Set(JSON.parse(selectedIdsJson))
-          setSelectedIds(idsToCheckout)
+           idsToCheckout = new Set(JSON.parse(selectedIdsJson))
+           setSelectedIds(idsToCheckout)
         } catch (e) {
-          console.error("Error reading selected_ids:", e)
+           console.error("Error reading selected_ids:", e)
+           // Fallback: Chọn tất cả nếu lỗi
+           idsToCheckout = new Set(allItems.map(item => item.cart_item_id));
+           setSelectedIds(idsToCheckout);
         }
+      } else {
+         // Nếu không có selectedIds (mua ngay), chọn tất cả
+         idsToCheckout = new Set(allItems.map(item => item.cart_item_id));
+         setSelectedIds(idsToCheckout);
       }
 
       // Filter items to only include selected ones
@@ -83,14 +93,16 @@ export default function CheckoutPage() {
     const result = await OrderService.createOrder(data)
     setIsProcessing(false)
 
-    // ĐÚNG: Chỉ sử dụng state đã khai báo, không khai báo lại
     if (result.success) {
       setOrderCode(result.order_code || null)   
-      setOrderId(result.order_id || null)  //  Sử dụng state đã có
+      setOrderId(result.order_id || null) 
       setOrderComplete(true)
+      // Xóa danh sách đã chọn
       localStorage.removeItem("techstore_selected_ids")
+      // Cập nhật giỏ hàng (để xóa icon trên header)
+      window.dispatchEvent(new CustomEvent('cartUpdated'));
     } else {
-      setError(result.message)  //  Sử dụng state đã có
+      setError(result.message) 
     }
   }
 
@@ -254,42 +266,6 @@ export default function CheckoutPage() {
                           </div>
                         </Label>
                       </div>
-
-                      {/* <div
-                        className={`flex items-center space-x-3 border-2 rounded-lg p-4 cursor-pointer transition-colors ${
-                          paymentMethod === "card" ? "border-primary bg-primary/5" : "border-border hover:bg-muted/50"
-                        }`}
-                      >
-                        <RadioGroupItem value="card" id="card" />
-                        <Label htmlFor="card" className="flex-1 flex items-center gap-3 cursor-pointer">
-                          <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center">
-                            <CreditCard className="h-5 w-5 text-primary" />
-                          </div>
-                          <div>
-                            <p className="font-semibold">Thẻ tín dụng/ghi nợ</p>
-                            <p className="text-sm text-muted-foreground">Visa, Mastercard</p>
-                          </div>
-                        </Label>
-                      </div>
-
-                      <div
-                        className={`flex items-center space-x-3 border-2 rounded-lg p-4 cursor-pointer transition-colors ${
-                          paymentMethod === "ewallet"
-                            ? "border-primary bg-primary/5"
-                            : "border-border hover:bg-muted/50"
-                        }`}
-                       >
-                        <RadioGroupItem value="ewallet" id="ewallet" />
-                        <Label htmlFor="ewallet" className="flex-1 flex items-center gap-3 cursor-pointer">
-                          <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center">
-                            <Wallet className="h-5 w-5 text-primary" />
-                          </div>
-                          <div>
-                            <p className="font-semibold">Ví điện tử</p>
-                            <p className="text-sm text-muted-foreground">MoMo, ZaloPay, VNPay</p>
-                          </div>
-                        </Label>
-                      </div> */}
                     </RadioGroup>
                   </div>
                 </div>

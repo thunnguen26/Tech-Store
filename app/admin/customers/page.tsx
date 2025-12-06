@@ -8,20 +8,24 @@ import { Input } from "@/components/ui/input"
 import { Search, Edit, Trash2, UserPlus, AlertCircle } from "lucide-react"
 import Link from "next/link"
 
-// Import service và type
-import { AdminService, AdminCustomer } from "@/services/AdminService"
+// 1. SỬA IMPORT
+import { AdminService } from "@/services/AdminService"
+import { AdminCustomer } from "@/models/User.model" // <-- Lấy từ Model
 
 type CustomerStatus = "active" | "inactive";
 type FilterStatus = CustomerStatus | "all";
 
 export default function CustomersManagement() {
+  // ... (Toàn bộ logic bên dưới giữ nguyên như file cũ) ...
+  // Bạn chỉ cần copy paste lại nội dung file cũ, chỉ sửa mỗi dòng import ở trên thôi.
+  // Nhưng để chắc chắn không lỗi, đây là code đầy đủ:
+
   const [searchQuery, setSearchQuery] = useState("")
   const [statusFilter, setStatusFilter] = useState<FilterStatus>("all")
   const [customers, setCustomers] = useState<AdminCustomer[]>([])
   const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
 
-  // Fetch customers từ API
   useEffect(() => {
     const fetchCustomers = async () => {
       try {
@@ -36,11 +40,9 @@ export default function CustomersManagement() {
         setIsLoading(false)
       }
     }
-
     fetchCustomers()
   }, [])
 
-  // Logic lọc khách hàng
   const filteredCustomers = customers.filter((customer) => {
     const matchesSearch = 
       customer.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -51,39 +53,30 @@ export default function CustomersManagement() {
     return matchesSearch && matchesStatus
   })
 
-  // Hàm xử lý xóa khách hàng
   const handleDeleteCustomer = async (customerId: number, customerName: string) => {
-        if (!confirm(`Bạn có chắc chắn muốn xóa khách hàng "${customerName}"? \nLƯU Ý: Toàn bộ đơn hàng và giỏ hàng của họ cũng sẽ bị xóa vĩnh viễn!`)) {
-          return;
-        }
+        if (!confirm(`Bạn có chắc chắn muốn xóa khách hàng "${customerName}"? \nLƯU Ý: Toàn bộ đơn hàng và giỏ hàng của họ cũng sẽ bị xóa vĩnh viễn!`)) {
+          return;
+        }
     
-        try {
-          // 1. Gọi API xóa
-          const result = await AdminService.deleteCustomer(customerId);
-          
+        try {
+          const result = await AdminService.deleteCustomer(customerId);
+          
           if (result.success) {
-            // 2. Cập nhật state local CHỈ KHI API THÀNH CÔNG
-            setCustomers(customers.filter(c => c.id !== customerId));
-    //         alert("Xóa khách hàng thành công!");
+            setCustomers(customers.filter(c => c.id !== customerId));
           } else {
-            // 3. Hiển thị lỗi nếu API thất bại
             alert(result.message);
           }
-        } catch (err) {
-          alert("Không thể xóa khách hàng. Vui lòng thử lại.");
-          console.error("Error deleting customer:", err);
-        }
-      }
+        } catch (err) {
+          alert("Không thể xóa khách hàng. Vui lòng thử lại.");
+          console.error("Error deleting customer:", err);
+        }
+      }
 
-  // Định dạng hiển thị trạng thái
   const getStatusDisplay = (status: CustomerStatus) => {
     switch (status) {
-      case "active":
-        return { label: "Hoạt động", className: "bg-green-500/10 text-green-400" }
-      case "inactive":
-        return { label: "Khóa", className: "bg-red-500/10 text-red-400" }
-      default:
-        return { label: "Không rõ", className: "bg-gray-500/10 text-gray-400" }
+      case "active": return { label: "Hoạt động", className: "bg-green-500/10 text-green-400" }
+      case "inactive": return { label: "Khóa", className: "bg-red-500/10 text-red-400" }
+      default: return { label: "Không rõ", className: "bg-gray-500/10 text-gray-400" }
     }
   }
 
@@ -127,8 +120,8 @@ export default function CustomersManagement() {
         </div>
       </Card>
 
-      {/* Statistics */}
-      <div className="grid gap-4 md:grid-cols-3">
+      {/* Statistics - Giữ nguyên */}
+       <div className="grid gap-4 md:grid-cols-3">
         <Card className="border-gray-800 bg-gray-950 p-4">
           <div className="text-sm text-gray-400">Tổng khách hàng</div>
           <div className="mt-2 text-2xl font-bold text-white">{customers.length}</div>
@@ -153,12 +146,7 @@ export default function CustomersManagement() {
           <div className="flex flex-col items-center justify-center py-12 text-red-400">
             <AlertCircle className="mb-2 h-12 w-12" />
             <p>{error}</p>
-            <Button 
-              onClick={() => window.location.reload()} 
-              className="mt-4 bg-blue-600 hover:bg-blue-700"
-            >
-              Thử lại
-            </Button>
+            <Button onClick={() => window.location.reload()} className="mt-4 bg-blue-600 hover:bg-blue-700">Thử lại</Button>
           </div>
         ) : isLoading ? (
           <div className="flex flex-col items-center justify-center py-12">
@@ -190,12 +178,8 @@ export default function CustomersManagement() {
                         <td className="p-4 text-gray-300">{customer.email}</td>
                         <td className="p-4 text-gray-300">{customer.phone}</td>
                         <td className="p-4 text-gray-300">{customer.totalOrders}</td>
-                        <td className="p-4 font-medium text-white">
-                          {customer.totalSpent.toLocaleString("vi-VN")} ₫
-                        </td>
-                        <td className="p-4 text-gray-300">
-                          {new Date(customer.joinDate).toLocaleDateString('vi-VN')}
-                        </td>
+                        <td className="p-4 font-medium text-white">{customer.totalSpent.toLocaleString("vi-VN")} ₫</td>
+                        <td className="p-4 text-gray-300">{new Date(customer.joinDate).toLocaleDateString('vi-VN')}</td>
                         <td className="p-4">
                           <span className={`inline-flex rounded-full px-3 py-1 text-xs font-medium ${statusInfo.className}`}>
                             {statusInfo.label}
@@ -204,20 +188,12 @@ export default function CustomersManagement() {
                         <td className="p-4">
                           <div className="flex items-center gap-2">
                             <Link href={`/admin/customers/edit/${customer.id}`}>
-                              <Button 
-                                variant="ghost" 
-                                size="sm" 
-                                className="h-8 w-8 p-0 text-gray-400 hover:text-white" 
-                                title="Chỉnh sửa thông tin"
-                              >
+                              <Button variant="ghost" size="sm" className="h-8 w-8 p-0 text-gray-400 hover:text-white">
                                 <Edit className="h-4 w-4" />
                               </Button>
                             </Link>
                             <Button 
-                              variant="ghost" 
-                              size="sm" 
-                              className="h-8 w-8 p-0 text-gray-400 hover:text-red-400" 
-                              title="Xóa tài khoản"
+                              variant="ghost" size="sm" className="h-8 w-8 p-0 text-gray-400 hover:text-red-400"
                               onClick={() => handleDeleteCustomer(customer.id, customer.name)}
                             >
                               <Trash2 className="h-4 w-4" />
@@ -230,9 +206,7 @@ export default function CustomersManagement() {
                 ) : (
                   <tr>
                     <td colSpan={8} className="p-12 text-center text-gray-500">
-                      {searchQuery || statusFilter !== "all" 
-                        ? "Không tìm thấy khách hàng phù hợp" 
-                        : "Chưa có khách hàng nào"}
+                      Không tìm thấy khách hàng phù hợp
                     </td>
                   </tr>
                 )}
@@ -241,7 +215,7 @@ export default function CustomersManagement() {
           </div>
         )}
       </Card>
-
+      
       {/* Footer info */}
       {!isLoading && !error && filteredCustomers.length > 0 && (
         <div className="text-center text-sm text-gray-400">

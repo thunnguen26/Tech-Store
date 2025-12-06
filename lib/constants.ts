@@ -1,3 +1,4 @@
+//lib/constans.ts
 export const APP_CONFIG = {
   APP_NAME: "TechStore",
   APP_DESCRIPTION: "Cửa hàng công nghệ hàng đầu Việt Nam",

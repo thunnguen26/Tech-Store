@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Máy chủ: 127.0.0.1
--- Thời gian đã tạo: Th10 25, 2025 lúc 02:40 PM
+-- Thời gian đã tạo: Th12 06, 2025 lúc 06:13 AM
 -- Phiên bản máy phục vụ: 10.4.32-MariaDB
 -- Phiên bản PHP: 8.0.30
 
@@ -40,8 +40,8 @@ CREATE TABLE `cartitems` (
 --
 
 INSERT INTO `cartitems` (`id`, `cart_id`, `variant_id`, `quantity`, `added_at`) VALUES
-(49, 4, 58, 1, '2025-11-25 13:17:23'),
-(50, 4, 56, 1, '2025-11-25 13:17:26');
+(51, 8, 57, 3, '2025-11-27 05:29:33'),
+(54, 8, 58, 1, '2025-11-28 20:41:28');
 
 -- --------------------------------------------------------
 
@@ -62,7 +62,8 @@ CREATE TABLE `carts` (
 INSERT INTO `carts` (`id`, `user_id`, `created_at`) VALUES
 (4, 2, '2025-11-19 05:04:10'),
 (5, 8, '2025-11-20 13:54:04'),
-(6, 9, '2025-11-20 14:03:06');
+(6, 9, '2025-11-20 14:03:06'),
+(8, 1, '2025-11-27 05:29:33');
 
 -- --------------------------------------------------------
 
@@ -113,7 +114,16 @@ INSERT INTO `orderitems` (`id`, `order_id`, `variant_id`, `quantity`, `price_at_
 (23, 21, 58, 1, 27500000.00),
 (24, 22, 62, 1, 25450000.00),
 (25, 23, 63, 1, 7000000.00),
-(26, 24, 44, 1, 30000000.00);
+(26, 24, 44, 1, 30000000.00),
+(27, 25, 58, 1, 27500000.00),
+(28, 26, 66, 1, 28000000.00),
+(29, 27, 63, 2, 7000000.00),
+(30, 28, 65, 1, 23000000.00),
+(31, 29, 66, 1, 28000000.00),
+(32, 30, 65, 1, 23000000.00),
+(33, 31, 57, 1, 11000000.00),
+(34, 32, 54, 1, 36000000.00),
+(35, 33, 54, 1, 36000000.00);
 
 -- --------------------------------------------------------
 
@@ -156,7 +166,16 @@ INSERT INTO `orders` (`id`, `user_id`, `order_code`, `customer_first_name`, `cus
 (21, 9, 'ORD-DC43EE0E3521', 'Trần Văn', 'Tri', 'tri@gmail.com', '0908124760', '33 Trần Đại Nghĩa', 'Đà Nẵng', 'Ngũ Hành Sơn', 27500000.00, 0.00, 0.00, 27500000.00, 'cod', 'Vận chuyển cẩn thận', 'completed', '2025-11-20 14:04:31'),
 (22, 9, 'ORD-3ECCBEAB04DE', 'Trần Văn', 'Tri', 'tri@gmail.com', '0908124760', '33 Trần Đại Nghĩa', 'Đà Nẵng', 'Ngũ Hành Sơn', 25450000.00, 0.00, 0.00, 25450000.00, 'cod', 'Chú ý vận chuyển', 'completed', '2025-11-20 14:05:12'),
 (23, 9, 'ORD-F44F7015AF97', 'Trần Văn', 'Tri', 'tri@gmail.com', '0908124760', '33 Trần Đại Nghĩa', 'Đà Nẵng', 'Ngũ Hành Sơn', 7000000.00, 0.00, 0.00, 7000000.00, 'cod', 'Chú ý giao hàng cẩn thận', 'completed', '2025-11-20 14:06:04'),
-(24, 2, 'ORD-FFA35038070A', 'Nguyễn Phước', 'Thuần', 'thuan@gmail.com', '0985563320', '12 Nam Kì Khởi Nghĩa', 'Đà Nẵng', 'Ngũ Hành Sơn', 30000000.00, 0.00, 0.00, 30000000.00, 'cod', 'Chú ý cẩn thận', 'completed', '2025-11-25 13:21:06');
+(24, 2, 'ORD-FFA35038070A', 'Nguyễn Phước', 'Thuần', 'thuan@gmail.com', '0985563320', '12 Nam Kì Khởi Nghĩa', 'Đà Nẵng', 'Ngũ Hành Sơn', 30000000.00, 0.00, 0.00, 30000000.00, 'cod', 'Chú ý cẩn thận', 'completed', '2025-11-25 13:21:06'),
+(25, 2, 'ORD-D5F866E79752', 'Nguyễn Phước', 'Thuần', 'thuan@gmail.com', '0981664778', '12 Nam Kì Khởi Nghĩa', 'Đà Nẵng', 'Ngũ Hành Sơn', 27500000.00, 0.00, 0.00, 27500000.00, 'cod', 'Cẩn thận', 'completed', '2025-11-28 20:42:27'),
+(26, 2, 'ORD-4E99FE7DA01D', 'Nguyễn Phước', 'Thuần', 'thuan@gmail.com', '0981664778', '12 Nam Kì Khởi Nghĩa', 'Đà Nẵng', 'Ngũ Hành Sơn', 28000000.00, 0.00, 0.00, 28000000.00, 'cod', 'Giao hàng cẩn thận', 'completed', '2025-12-02 11:56:55'),
+(27, 2, 'ORD-F876FA242FD9', 'Nguyễn Phước', 'Thuần', 'thuan@gmail.com', '0981664778', '12 Nam Kì Khởi Nghĩa', 'Đà Nẵng', 'Ngũ Hành Sơn', 14000000.00, 0.00, 0.00, 14000000.00, 'cod', '', 'cancelled', '2025-12-02 12:10:26'),
+(28, 2, 'ORD-63BCD46FAFCB', 'Nguyễn Phước', 'Thuần', 'thuan@gmail.com', '0981664778', '12 Nam Kì Khởi Nghĩa', 'Đà Nẵng', 'Ngũ Hành Sơn', 23000000.00, 0.00, 0.00, 23000000.00, 'cod', 'Chý ý giao hàng', 'completed', '2025-12-03 03:09:35'),
+(29, 9, 'ORD-C43FD110B998', 'Trần Văn', 'Tri', 'tri@gmail.com', '0985563320', '224 Trần Đại Nghĩa', 'Đà Nẵng', 'Ngũ Hành Sơn', 28000000.00, 0.00, 0.00, 28000000.00, 'cod', 'Cẩn thận', 'completed', '2025-12-03 03:29:29'),
+(30, 9, 'ORD-E978F7D56815', 'Trần Văn', 'Tri', 'tri@gmail.com', '0985563320', '224 Trần Đại Nghĩa', 'Đà Nẵng', 'Ngũ Hành Sơn', 23000000.00, 0.00, 0.00, 23000000.00, 'cod', 'Chú ý giao hàng cẩn thận', 'completed', '2025-12-03 03:33:22'),
+(31, 9, 'ORD-14113347738C', 'Trần Văn', 'Tri', 'thuan@gmail.com', '0985563320', '224 Trần Đại Nghĩa', 'Đà Nẵng', 'Ngũ Hành Sơn', 11000000.00, 0.00, 0.00, 11000000.00, 'cod', 'Cẩn thận', 'cancelled', '2025-12-03 03:42:01'),
+(32, 8, 'ORD-3F759F12532B', 'Nguyễn Văn', 'An', 'an@gmail.com', '0908124760', '33 Trần Đại Nghĩa', 'Đà Nẵng', 'Ngũ Hành Sơn', 36000000.00, 0.00, 0.00, 36000000.00, 'cod', 'Chú ý', 'shipped', '2025-12-03 08:37:20'),
+(33, 2, 'ORD-2A4E52C9584F', 'Nguyễn Phước', 'Thuần', 'thuan@gmail.com', '0981664778', '12 Nam Kì Khởi Nghĩa', 'Đà Nẵng', 'Ngũ Hành Sơn', 36000000.00, 0.00, 0.00, 36000000.00, 'cod', 'Cẩn thận', 'pending', '2025-12-04 02:48:56');
 
 -- --------------------------------------------------------
 
@@ -242,7 +261,11 @@ INSERT INTO `productimages` (`id`, `product_id`, `image_url`) VALUES
 (107, 33, 'http://localhost/techstore-api/uploads/prod_691f2a2bab2e61.77614299.webp'),
 (108, 33, 'http://localhost/techstore-api/uploads/prod_691f2a2babbcc1.46453652.webp'),
 (109, 33, 'http://localhost/techstore-api/uploads/prod_691f2a2bac7b38.21719120.webp'),
-(110, 33, 'http://localhost/techstore-api/uploads/prod_691f2a2baceae0.15562879.webp');
+(110, 33, 'http://localhost/techstore-api/uploads/prod_691f2a2baceae0.15562879.webp'),
+(111, 34, 'http://localhost/techstore-api/uploads/prod_692a12682613e7.02049578.jpg'),
+(112, 34, 'http://localhost/techstore-api/uploads/prod_692a1268272f76.67469541.jpg'),
+(113, 34, 'http://localhost/techstore-api/uploads/prod_692a1268284fd2.89876808.jpg'),
+(114, 34, 'http://localhost/techstore-api/uploads/prod_692a1268290747.60751967.jpg');
 
 -- --------------------------------------------------------
 
@@ -276,7 +299,8 @@ INSERT INTO `products` (`id`, `category_id`, `name`, `description`, `brand`, `mo
 (30, 1, 'Samsung Galaxy S25 Ultra', 'Samsung Galaxy S25 Ultra sở hữu thiết kế khung titanium cứng cáp, bền bỉ và sang trọng. Màn hình Dynamic AMOLED 2X 6,9 inch với độ sáng cao, màu sắc sống động và tần số quét 1–120Hz cho trải nghiệm mượt mà trong mọi tác vụ.\r\n\r\nMáy được trang bị camera chính 200MP, kết hợp cảm biến lớn và thuật toán AI mới, cho khả năng chụp đêm tốt hơn và zoom quang học chất lượng cao. Hệ thống camera phụ nâng cấp giúp quay video ổn định, rõ nét trong nhiều điều kiện.\r\n\r\nHiệu năng mạnh mẽ nhờ chip Snapdragon 8 Elite, tối ưu cho AI, chơi game và xử lý đa nhiệm. Pin dung lượng lớn mang lại thời gian sử dụng dài, hỗ trợ sạc nhanh và sạc không dây.\r\n\r\nGalaxy S25 Ultra tiếp tục hỗ trợ S Pen, giúp ghi chú, phác thảo và thao tác chính xác hơn. Tính năng AI thế hệ mới của Samsung giúp tăng trải nghiệm: dịch trực tiếp, chỉnh sửa ảnh thông minh, hỗ trợ công việc và sáng tạo.', 'Samsung', 'SSS25', 'active', '[\"Bộ xử lý: Snapdragon 8 Elite dành cho Galaxy (3nm)\",\"RAM: 12 GB\",\"Bộ nhớ: 256 GB\",\"Màn hình: 6.9 inches - Dynamic AMOLED 2X\"]', 'http://localhost/techstore-api/uploads/prod_691f15b2aee761.72513591.jpg'),
 (31, 1, 'Xiaomi 15 Ultra', 'Xiaomi 15 Ultra 16GB 512GB trang bị chip Snapdragon® 8 Elite mạnh mẽ và RAM lên đến 16GB, người dùng sẽ có trải nghiệm mượt mà và dung lượng lưu trữ 512GB. Thiết bị này được nâng cấp nhờ trang bị ống kính tele có độ phân giải cao đến 200 megapixel. Viên pin lớn 5410 mAh, sẽ giúp nâng cao thời gian dùng điện thoại của người dùng. Đồng thời, Mi 15 Ultra trang bị tấm nền AMOLED, sẽ đem lại chất lượng hiển thị nổi bật và chi tiết về màu sắc.', 'Xiaomi', 'XM15UT', 'active', '[\"Bộ xử lý: Snapdragon 8 Elite (Tiến trình sản xuất 3nm)\",\"RAM: 16 GB\",\"Bộ nhớ: 512 GB\",\"Màn hình: 6,73 inch - Công nghệ LTPO AMOLED\"]', 'http://localhost/techstore-api/uploads/prod_691f18a09cbe45.71284520.jpg'),
 (32, 4, 'Tai nghe Bluetooth Apple AirPods Pro 3 2025', 'AirPods Pro 3 ra mắt tháng 9/2025, mang đến bước tiến lớn với khả năng khử tiếng ồn chủ động gấp đôi thế hệ trước, thiết kế gọn nhẹ và pin bền bỉ vượt trội. Apple tích hợp cảm biến đo nhịp tim trực tiếp trên tai nghe, biến AirPods Pro thế hệ thứ 3 thành trợ lý sức khỏe thông minh cho người dùng.\r\n\r\nCùng với chất lượng âm thanh ấn tượng, Airpods Pro 3 hứa hẹn nâng tầm trải nghiệm nghe nhạc và giao tiếp hàng ngày.', 'Apple', 'APP3', 'active', '[\"Bộ xử lý: Chip Apple H2\"]', 'http://localhost/techstore-api/uploads/prod_691f1a20dba338.84085765.jpg'),
-(33, 1, 'OPPO Find X9 12GB 256GB', 'OPPO Find X9 được trang bị chip Dimensity 9500 5G tối đa 4.21GHz cùng RAM 12GB mang đến hiệu năng mạnh mẽ, phục vụ nhu cầu đa nhiệm, chơi game và quay phim. Máy sở hữu màn hình AMOLED 6.59 inch, độ phân giải 1.5K (1256 x 2760), tần số quét 120Hz, hỗ trợ hiển thị hình ảnh sắc nét. Kèm theo đó là thiết kế viền siêu mỏng, tạo cho người dùng trải nghiệm thị giác đắm chìm.', 'OPPO', 'OPX9', 'active', '{\"processor\":\"Dimensity 9500 5G\",\"ram\":\"12GB\",\"storage\":\"256 GB\",\"screen\":\"6.59 inches\"}', 'http://localhost/techstore-api/uploads/prod_691f2a2baa1815.94631682.jpg');
+(33, 1, 'OPPO Find X9 12GB 256GB', 'OPPO Find X9 được trang bị chip Dimensity 9500 5G tối đa 4.21GHz cùng RAM 12GB mang đến hiệu năng mạnh mẽ, phục vụ nhu cầu đa nhiệm, chơi game và quay phim. Máy sở hữu màn hình AMOLED 6.59 inch, độ phân giải 1.5K (1256 x 2760), tần số quét 120Hz, hỗ trợ hiển thị hình ảnh sắc nét. Kèm theo đó là thiết kế viền siêu mỏng, tạo cho người dùng trải nghiệm thị giác đắm chìm.', 'OPPO', 'OPX9', 'active', '{\"processor\":\"Dimensity 9500 5G\",\"ram\":\"12GB\",\"storage\":\"256 GB\",\"screen\":\"6.59 inches\"}', 'http://localhost/techstore-api/uploads/prod_691f2a2baa1815.94631682.jpg'),
+(34, 1, 'iPhone 14 Pro Max', 'iPhone 14 Pro Max có sự cải thiện lớn màn hình so với iPhone 13 Pro Max. Sự khác biệt giữ phiên bản iPhone 14 Pro Max 256GB và bản tiêu chuẩn 128GB chỉ là bộ nhớ trong. \r\n\r\nKích thước màn hình iPhone 14 Pro Max vẫn là 6.1 inch tuy nhiên phần “tai thỏ” đã được thay thế bằng một đường cắt hình viên thuốc. Apple gọi đây là Dynamic Island - nơi chứa camera Face ID và một đường cắt hình tròn thứ hai cho camera trước.\r\n\r\nNgoài ra, iPhone 14 Pro Max có tính năng màn hình luôn bật hoạt động (Always-on Display) với tiện ích màn hình khóa mới trên iOS 16. Người dùng có thể xem các thông tin như lời nhắc, sự kiện lịch và thời tiết mà không cần bật máy lên để xem. Thậm chí, có một trạng thái ngủ cho hình nền, trạng thái này sẽ làm tối hình nền để sử dụng ít pin hơn.\r\n\r\niPhone 14 Pro Max được trang bị bộ vi xử lý Apple A16 Bionic. Apple đã tập trung vào hiệu quả sử dụng năng lượng, màn hình và camera với con chip mới của mình. CPU sáu nhân bao gồm hai nhân hiệu suất cao sử dụng năng lượng thấp hơn 20% và bốn nhân tiết kiệm pin chỉ sử dụng một phần ba năng lượng so với chip của các đối thủ cạnh tranh.', 'Apple', 'IP14PRM', 'active', '[\"Bộ xử lý: Apple A16 Bionic 6 nhân\",\"RAM: 6 GB\",\"Bộ nhớ: 256 GB\",\"Màn hình: 6.7 inches -  Super Retina XDR OLED\"]', 'http://localhost/techstore-api/uploads/prod_692a12682613e7.02049578.jpg');
 
 -- --------------------------------------------------------
 
@@ -306,7 +330,7 @@ INSERT INTO `productvariants` (`id`, `product_id`, `size`, `color_name`, `color_
 (41, 25, '256GB', 'Xanh Mòng Két', '#96d4c1', 27000000.00, 28499000.00, 'IP16-256-XMKP', 18),
 (44, 26, '256GB', 'Trắng mây', '#ebebeb', 30000000.00, 31799000.00, 'IP-256-TMAIR', 22),
 (45, 26, '256GB', 'Đen Không Gian', '#3b3b3b', 30000000.00, 31798000.00, 'IP-256-DKGAIR', 18),
-(54, 24, '256GB', 'Cam', '#fe8b20', 36000000.00, 38000000.00, 'IP17-256-CAM', 30),
+(54, 24, '256GB', 'Cam', '#fe8b20', 36000000.00, 38000000.00, 'IP17-256-CAM', 28),
 (55, 24, '1T', 'Bạc', '#d1d1d1', 36000000.00, 38000000.00, 'IP17-256-BAC', 30),
 (56, 27, '256GB', 'Xanh Da Trời', '#c2ebff', 26500000.00, 28000000.00, 'MB-256-AIR13', 14),
 (57, 28, ' ', 'Xanh lá cây', '#dbffe4', 11000000.00, 12000000.00, 'AP-XLC', 33),
@@ -315,8 +339,9 @@ INSERT INTO `productvariants` (`id`, `product_id`, `size`, `color_name`, `color_
 (60, 30, '256 GB', 'Đen', '#000000', 28000000.00, 30000000.00, 'SS-256-S25D', 22),
 (61, 30, '512 GB', 'Đen', '#000000', 30000000.00, 32000000.00, 'SS-512-S25D', 20),
 (62, 31, '512 GB', 'Bạc', '#c2c2c2', 25450000.00, 26000000.00, 'XM-512-15UT', 27),
-(63, 32, ' ', 'Trắng', '#ffffff', 7000000.00, 7800000.00, 'AP-PRO3-T25', 30),
-(65, 33, '256 GB', 'Đen', '#000000', 23000000.00, 25000000.00, 'OP-256-X9', 21);
+(63, 32, ' ', 'Trắng', '#ffffff', 7000000.00, 7800000.00, 'AP-PRO3-T25', 32),
+(65, 33, '256 GB', 'Đen', '#000000', 23000000.00, 25000000.00, 'OP-256-X9', 20),
+(66, 34, '256 GB', 'Đen', '#000000', 28000000.00, 30000000.00, 'IP14-256-PRM', 16);
 
 -- --------------------------------------------------------
 
@@ -374,7 +399,7 @@ INSERT INTO `users` (`id`, `first_name`, `last_name`, `email`, `phone`, `passwor
 (1, 'Admin', 'Admin', 'admin@gmail.com', '0985563341', '$2y$10$FcHMffjCnZrAgaFtGF55r.xwQudj7SqvwZNK1WbIOYsiRCNWjIlha', '2025-11-25 12:45:47', 'admin'),
 (2, 'Nguyễn Phước', 'Thuần', 'thuan@gmail.com', '0981664778', '$2y$10$0fbQePPU3ORubrRKU/Nl7ufb7Tz/v0zHM8To5pJ3v/SmWCGOWyxUy', '2025-11-03 03:11:53', 'customer'),
 (8, 'Nguyễn Văn', 'An', 'an@gmail.com', '0905766893', '$2y$10$hG4pp1J2JRvruVEk504/bOyfwdNKlnNN3YXVJgolj3ZHRaL4tFAFq', '2025-11-20 13:53:32', 'customer'),
-(9, 'Trần Văn', 'Tri', 'tri@gmail.com', '0908124760', '$2y$10$1PF2.DprIl25NvEXft2Nxu2HAyZDGxxXJ6AHuGBgd2aTMjlwxGL96', '2025-11-20 14:02:46', 'customer');
+(9, 'Trần Văn', 'Tri', 'tri@gmail.com', '0908124765', '$2y$10$1PF2.DprIl25NvEXft2Nxu2HAyZDGxxXJ6AHuGBgd2aTMjlwxGL96', '2025-11-20 14:02:46', 'customer');
 
 --
 -- Chỉ mục cho các bảng đã đổ
@@ -471,13 +496,13 @@ ALTER TABLE `users`
 -- AUTO_INCREMENT cho bảng `cartitems`
 --
 ALTER TABLE `cartitems`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=51;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=70;
 
 --
 -- AUTO_INCREMENT cho bảng `carts`
 --
 ALTER TABLE `carts`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
 
 --
 -- AUTO_INCREMENT cho bảng `categories`
@@ -489,13 +514,13 @@ ALTER TABLE `categories`
 -- AUTO_INCREMENT cho bảng `orderitems`
 --
 ALTER TABLE `orderitems`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=27;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=36;
 
 --
 -- AUTO_INCREMENT cho bảng `orders`
 --
 ALTER TABLE `orders`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=25;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=34;
 
 --
 -- AUTO_INCREMENT cho bảng `passwordresets`
@@ -507,19 +532,19 @@ ALTER TABLE `passwordresets`
 -- AUTO_INCREMENT cho bảng `productimages`
 --
 ALTER TABLE `productimages`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=111;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=115;
 
 --
 -- AUTO_INCREMENT cho bảng `products`
 --
 ALTER TABLE `products`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=34;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=35;
 
 --
 -- AUTO_INCREMENT cho bảng `productvariants`
 --
 ALTER TABLE `productvariants`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=66;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=67;
 
 --
 -- AUTO_INCREMENT cho bảng `reviews`

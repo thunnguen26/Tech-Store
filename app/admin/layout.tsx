@@ -5,7 +5,9 @@ import React, { useState, useEffect } from "react"
 import Link from "next/link"
 import { useRouter } from "next/navigation"
 import { LayoutDashboard, Package, ShoppingCart, Users, Menu, LogOut, ArrowLeft } from "lucide-react"
-import { AuthService, User } from "@/services/AuthService"
+
+import { AuthService } from "@/services/AuthService"
+import { User } from "@/models/User.model"
 
 export default function AdminLayout({
   children,

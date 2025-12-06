@@ -1,3 +1,5 @@
+//components/footer.tsx
+
 import Link from "next/link"
 import { Facebook, Instagram, Twitter, Mail, Phone, MapPin, Clock } from "lucide-react"
 
@@ -75,7 +77,7 @@ export function Footer() {
                 </Link>
               </li>
               <li>
-                <Link href="/contact" className="text-sm text-gray-400 hover:text-white transition-colors flex items-center gap-2 group">
+                <Link href="https://www.facebook.com/thunnguen06" className="text-sm text-gray-400 hover:text-white transition-colors flex items-center gap-2 group">
                   <span className="w-1.5 h-1.5 rounded-full bg-gray-600 group-hover:bg-blue-400 group-hover:scale-125 transition-all"></span>
                   Liên hệ
                 </Link>
@@ -116,14 +118,7 @@ export function Footer() {
             <p className="text-sm text-gray-500">
               &copy; 2025 <span className="text-gray-400 font-medium">TechStore</span>. All rights reserved.
             </p>
-            <div className="flex gap-6 text-sm">
-              <Link href="/privacy" className="text-gray-500 hover:text-gray-300 transition-colors">
-                Chính sách bảo mật
-              </Link>
-              <Link href="/terms" className="text-gray-500 hover:text-gray-300 transition-colors">
-                Điều khoản
-              </Link>
-            </div>
+            
           </div>
         </div>
       </div>

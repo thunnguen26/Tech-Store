@@ -1,66 +1,121 @@
-import type { IProduct, IProductDetail, ProductCategory } from "@/types/product.types"
+// src/models/Product.model.ts
 
-export class Product implements IProduct {
-  id: string
-  name: string
-  price: number
-  originalPrice?: number
-  image: string
-  category: ProductCategory
-  rating: number
-  reviews?: number
-  description?: string
-  inStock?: boolean
-  sku?: string
-
-  constructor(data: IProduct) {
-    this.id = data.id
-    this.name = data.name
-    this.price = data.price
-    this.originalPrice = data.originalPrice
-    this.image = data.image
-    this.category = data.category
-    this.rating = data.rating
-    this.reviews = data.reviews
-    this.description = data.description
-    this.inStock = data.inStock ?? true
-    this.sku = data.sku
-  }
-
-  // Business logic methods
-  getDiscount(): number {
-    if (!this.originalPrice) return 0
-    return Math.round(((this.originalPrice - this.price) / this.originalPrice) * 100)
-  }
-
-  getFormattedPrice(): string {
-    return this.price.toLocaleString("vi-VN") + "₫"
-  }
-
-  getFormattedOriginalPrice(): string {
-    return this.originalPrice ? this.originalPrice.toLocaleString("vi-VN") + "₫" : ""
-  }
-
-  isOnSale(): boolean {
-    return !!this.originalPrice && this.originalPrice > this.price
-  }
-
-  isAvailable(): boolean {
-    return this.inStock ?? true
-  }
+export interface ProductVariant {
+  id: number;
+  product_id: number;
+  size: string | null;
+  color_name: string | null;
+  color_hex: string | null;
+  price: number;
+  original_price: number | null;
+  sku: string | null;
+  stock_quantity: number;
 }
 
-export class ProductDetail extends Product implements IProductDetail {
-  images: string[]
-  features: string[]
-  sizes?: string[]
-  colors?: Array<{ name: string; value: string }>
+export interface Review {
+  rating: number;
+  comment: string | null;
+  created_at: string;
+  user_name: string;
+}
 
-  constructor(data: IProductDetail) {
-    super(data)
-    this.images = data.images
-    this.features = data.features
-    this.sizes = data.sizes
-    this.colors = data.colors
-  }
+export interface Product {
+  id: number;
+  name: string;
+  description: string | null;
+  features: string | string[] | null | any;
+  brand: string | null;
+  model: string | null;
+  base_image: string | null;
+  category_name: string;
+  status: string;
+  variants: ProductVariant[];
+  images: string[];
+  rating: number;
+  review_count: number;
+  reviews: Review[];
+}
+
+// Dữ liệu hiển thị bảng Admin
+export interface AdminProduct {
+  id: number;
+  name: string;
+  category: string;
+  price: number;
+  originalPrice?: number;
+  stock: number;
+  sold: number;
+  status: 'active' | 'out_of_stock' | 'draft';
+  image: string;
+}
+
+// Dữ liệu Form Thêm/Sửa
+export interface VariantFormData {
+  id?: number;
+  color_name: string;
+  color_hex: string;
+  size: string;
+  price: number;
+  original_price: number;
+  stock_quantity: number;
+  sku: string;
+}
+
+export interface AddProductFormData {
+  name: string;
+  description: string;
+  brand: string;
+  model?: string;
+  category: string;
+  status: string;
+  processor?: string;
+  ram?: string;
+  storage?: string;
+  screen?: string;
+  images: File[];
+  variants: Omit<VariantFormData, 'id'>[];
+}
+
+export interface UpdateProductFormData {
+  name: string;
+  description: string;
+  brand: string;
+  model?: string;
+  category: string;
+  status: string;
+  processor?: string;
+  ram?: string;
+  storage?: string;
+  screen?: string;
+  images: File[];
+  existingImages: string[];
+  variants: Omit<VariantFormData, 'id'>[];
+}
+
+export interface AdminProductDetails {
+  product: Product;
+  variants: ProductVariant[];
+  images: string[];
+}
+
+export interface CategoryInfo {
+  id: number;
+  name: string;
+  count: number;
+}
+
+export interface ReviewFormData {
+  user_id: number;
+  product_id: number;
+  order_id: number;
+  rating: number;
+  comment: string;
+}
+// === Thêm Interface cho Tìm kiếm ===
+export interface SearchProduct {
+  id: number;
+  name: string;
+  base_image: string;
+  price: number;
+  category_name: string;
 }

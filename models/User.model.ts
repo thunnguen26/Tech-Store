@@ -1,62 +1,87 @@
-import type { IUser, IUserAddress } from "@/types/user.types"
+// src/models/User.model.ts
 
-export class User implements IUser {
-  id: string
-  email: string
-  name: string
-  phone?: string
-  avatar?: string
-
-  constructor(data: IUser) {
-    this.id = data.id
-    this.email = data.email
-    this.name = data.name
-    this.phone = data.phone
-    this.avatar = data.avatar
-  }
-
-  getDisplayName(): string {
-    return this.name || this.email.split("@")[0]
-  }
-
-  getInitials(): string {
-    return this.name
-      .split(" ")
-      .map((n) => n[0])
-      .join("")
-      .toUpperCase()
-      .slice(0, 2)
-  }
-
-  hasPhone(): boolean {
-    return !!this.phone
-  }
+export interface User {
+  id: number;
+  firstName: string;
+  lastName: string;
+  name?: string; 
+  email?: string;
+  role: 'admin' | 'customer';
 }
 
-export class UserAddress implements IUserAddress {
-  id: string
-  userId: string
-  fullName: string
-  phone: string
-  address: string
-  city: string
-  district: string
-  ward: string
-  isDefault: boolean
+export interface FullUserData {
+  id: number;
+  first_name: string;
+  last_name: string;
+  email: string;
+  phone: string;
+  created_at: string;
+}
 
-  constructor(data: IUserAddress) {
-    this.id = data.id
-    this.userId = data.userId
-    this.fullName = data.fullName
-    this.phone = data.phone
-    this.address = data.address
-    this.city = data.city
-    this.district = data.district
-    this.ward = data.ward
-    this.isDefault = data.isDefault
-  }
+// === Dữ liệu Form Auth ===
+export interface RegisterData {
+  firstName: string;
+  lastName: string;
+  email: string;
+  phone: string;
+  password: string;
+}
 
-  getFullAddress(): string {
-    return `${this.address}, ${this.ward}, ${this.district}, ${this.city}`
-  }
+export interface LoginData {
+  email: string;
+  password: string;
+}
+
+export interface AuthResponse {
+  success: boolean;
+  message: string;
+  user?: User;
+}
+
+// === Dữ liệu Quản lý Khách hàng (Admin) ===
+
+// Hiển thị danh sách
+export interface AdminCustomer {
+  id: number;
+  name: string;
+  email: string;
+  phone: string;
+  totalOrders: number;
+  totalSpent: number;
+  joinDate: string;
+  status: 'active' | 'inactive';
+}
+
+// Form Thêm khách hàng
+export interface AdminAddCustomerData {
+  firstName: string;
+  lastName: string;
+  email: string;
+  phone: string;
+  password: string;
+}
+
+// Lấy chi tiết để sửa
+export interface AdminCustomerDetails {
+  id: number;
+  first_name: string;
+  last_name: string;
+  email: string;
+  phone: string;
+}
+
+// Gửi dữ liệu cập nhật
+export interface AdminUpdateCustomerData {
+  id: number;
+  first_name: string;
+  last_name: string;
+  email: string;
+  phone: string;
+  password?: string;
+}
+
+// Phản hồi chung
+export interface AdminResponse {
+  success: boolean;
+  message: string;
 }

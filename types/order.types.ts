@@ -1,3 +1,4 @@
+//types/oder.types.ts
 import type { ICartItem } from "./cart.types"
 
 export interface IOrder {

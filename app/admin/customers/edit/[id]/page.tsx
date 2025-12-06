@@ -10,7 +10,9 @@ import { Label } from "@/components/ui/label"
 import { ArrowLeft, AlertCircle, Eye, EyeOff, CheckCircle2, Save } from "lucide-react"
 import Link from "next/link"
 import { useRouter, useParams } from "next/navigation"
-import { AdminService, AdminCustomerDetails, AdminUpdateCustomerData } from "@/services/AdminService" 
+
+import { AdminService } from "@/services/AdminService"
+import { AdminCustomerDetails, AdminUpdateCustomerData } from "@/models/User.model" 
 // Component con để quản lý form
 function EditCustomerForm({ customer }: { customer: AdminCustomerDetails }) {
   const router = useRouter();

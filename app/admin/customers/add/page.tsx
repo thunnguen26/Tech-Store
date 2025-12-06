@@ -12,7 +12,8 @@ import Link from "next/link"
 import { useRouter } from "next/navigation"
 
 // Import service và type
-import { AdminService, AdminAddCustomerData } from "@/services/AdminService"
+import { AdminService } from "@/services/AdminService"
+import { AdminAddCustomerData } from "@/models/User.model"
 
 export default function AddCustomerPage() {
   const router = useRouter()

@@ -1,66 +1,73 @@
 // app/admin/page.tsx
-'use client'
+'use client';
 
-import { useState, useEffect } from "react"
-import { Card } from "@/components/ui/card"
-import { TrendingUp, DollarSign, ShoppingCart, Package, Users, AlertCircle } from "lucide-react"
-import { Line, LineChart, Bar, BarChart, ResponsiveContainer, XAxis, YAxis, CartesianGrid, Tooltip } from "recharts"
+import { useState, useEffect } from 'react';
+import { Card } from '@/components/ui/card';
+import {
+  TrendingUp,
+  DollarSign,
+  ShoppingCart,
+  Package,
+  Users,
+  AlertCircle,
+} from 'lucide-react';
+import {
+  Line,
+  LineChart,
+  Bar,
+  BarChart,
+  ResponsiveContainer,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+} from 'recharts';
 
 // 1. IMPORT SERVICE VÀ MODEL (ĐÚNG CHUẨN MVC)
-import { AdminService } from "@/services/AdminService"
-import { DashboardStats } from "@/models/Order.model" // Import từ Model
+import { AdminService } from '@/services/AdminService';
+import { DashboardStats } from '@/models/Order.model'; // Import từ Model
 
 // Định dạng tiền tệ
 const formatCurrency = (value: number) => {
-  if (value >= 1000000000) {
-    return (value / 1000000000).toFixed(1) + ' Tỷ';
-  }
-  if (value >= 1000000) {
-    return (value / 1000000).toFixed(1) + ' Tr';
-  }
-  if (value >= 1000) {
-    return (value / 1000).toFixed(0) + 'K';
-  }
-  return value.toLocaleString("vi-VN");
+  return new Intl.NumberFormat('vi-VN').format(value) + ' VNĐ';
 };
-
 export default function AdminDashboard() {
-  const [stats, setStats] = useState<DashboardStats | null>(null)
-  const [isLoading, setIsLoading] = useState(true)
-  const [error, setError] = useState<string | null>(null)
+  const [stats, setStats] = useState<DashboardStats | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     const fetchStats = async () => {
       try {
-        setIsLoading(true)
-        setError(null)
-        const data = await AdminService.getDashboardStats()
-        setStats(data)
+        setIsLoading(true);
+        setError(null);
+        const data = await AdminService.getDashboardStats();
+        setStats(data);
       } catch (err) {
-        setError("Không thể tải dữ liệu thống kê.")
-        console.error(err)
+        setError('Không thể tải dữ liệu thống kê.');
+        console.error(err);
       } finally {
-        setIsLoading(false)
+        setIsLoading(false);
       }
-    }
-    fetchStats()
-  }, [])
+    };
+    fetchStats();
+  }, []);
 
   if (isLoading) {
     return (
       <div className="flex justify-center items-center h-[80vh]">
         <div className="w-12 h-12 border-4 border-blue-500/30 border-t-blue-500 rounded-full animate-spin"></div>
       </div>
-    )
+    );
   }
 
   if (error || !stats) {
     return (
       <div className="flex flex-col items-center justify-center py-12 text-red-400">
         <AlertCircle className="mb-2 h-12 w-12" />
-        <p>{error || "Không có dữ liệu"}</p>
+        <p>{error || 'Không có dữ liệu'}</p>
       </div>
-    )
+    );
   }
 
   return (
@@ -94,7 +101,7 @@ export default function AdminDashboard() {
             <div>
               <p className="text-sm text-gray-400">Tổng đơn hàng</p>
               <p className="mt-2 text-3xl font-bold text-white">
-                {stats.kpi.totalOrders.toLocaleString("vi-VN")}
+                {stats.kpi.totalOrders.toLocaleString('vi-VN')}
               </p>
               <div className="mt-2 flex items-center gap-1 text-sm text-green-500">
                 <TrendingUp className="h-4 w-4" />
@@ -112,7 +119,7 @@ export default function AdminDashboard() {
             <div>
               <p className="text-sm text-gray-400">Sản phẩm (Đang bán)</p>
               <p className="mt-2 text-3xl font-bold text-white">
-                {stats.kpi.totalProducts.toLocaleString("vi-VN")}
+                {stats.kpi.totalProducts.toLocaleString('vi-VN')}
               </p>
               <div className="mt-2 flex items-center gap-1 text-sm text-gray-400">
                 <span>sản phẩm</span>
@@ -129,7 +136,7 @@ export default function AdminDashboard() {
             <div>
               <p className="text-sm text-gray-400">Tổng khách hàng</p>
               <p className="mt-2 text-3xl font-bold text-white">
-                {stats.kpi.totalCustomers.toLocaleString("vi-VN")}
+                {stats.kpi.totalCustomers.toLocaleString('vi-VN')}
               </p>
               <div className="mt-2 flex items-center gap-1 text-sm text-green-500">
                 <TrendingUp className="h-4 w-4" />
@@ -145,59 +152,83 @@ export default function AdminDashboard() {
 
       <div className="grid gap-6 lg:grid-cols-2">
         <Card className="border-gray-800 bg-gray-950 p-6">
-          <h3 className="text-lg font-semibold text-white">Doanh thu theo tháng</h3>
+          <h3 className="text-lg font-semibold text-white">
+            Doanh thu theo tháng(VNĐ)
+          </h3>
           <p className="text-sm text-gray-400">Doanh thu 12 tháng gần nhất</p>
           <div className="mt-6 h-[300px]">
-           <ResponsiveContainer width="100%" height="100%">
+            <ResponsiveContainer width="100%" height="100%">
               <LineChart data={stats.revenueChart}>
                 <CartesianGrid strokeDasharray="3 3" stroke="#1f2937" />
                 <XAxis dataKey="month" stroke="#6b7280" />
-                <YAxis stroke="#6b7280" tickFormatter={(value) => formatCurrency(value)} />
-                <Tooltip 
-                  contentStyle={{ backgroundColor: '#111827', border: '1px solid #374151' }}
+                <YAxis
+                  stroke="#6b7280"
+                  tickFormatter={(value) => {
+                    // Rút gọn cho trục Y (không cần chi tiết quá)
+                    if (value >= 1000000) {
+                      return (value / 1000000).toFixed(0) + ' Tr';
+                    }
+                    return value.toLocaleString('vi-VN');
+                  }}
+                />
+                <Tooltip
+                  contentStyle={{
+                    backgroundColor: '#111827',
+                    border: '1px solid #374151',
+                  }}
                   labelStyle={{ color: '#ffffff' }}
-                  formatter={(value: number) => [value.toLocaleString("vi-VN") + '₫', 'Doanh thu']}
+                  formatter={(value: number) => [
+                    formatCurrency(value), // Dùng hàm formatCurrency đã có
+                    'Doanh thu',
+                  ]}
                 />
                 <Line
                   type="monotone"
                   dataKey="revenue"
                   stroke="#3b82f6"
                   strokeWidth={2}
-                  dot={{ fill: "#3b82f6", r: 4 }}
+                  dot={{ fill: '#3b82f6', r: 4 }}
                 />
               </LineChart>
             </ResponsiveContainer>
-        </div>
+          </div>
         </Card>
 
-
         <Card className="border-gray-800 bg-gray-950 p-6">
-          <h3 className="text-lg font-semibold text-white">Đơn hàng 7 ngày qua</h3>
+          <h3 className="text-lg font-semibold text-white">
+            Đơn hàng 7 ngày qua
+          </h3>
           <p className="text-sm text-gray-400">Số đơn hàng trong tuần</p>
           <div className="mt-6 h-[300px]">
             <ResponsiveContainer width="100%" height="100%">
               <BarChart data={stats.ordersChart}>
                 <CartesianGrid strokeDasharray="3 3" stroke="#1f2937" />
-                <XAxis 
-                  dataKey="day" 
-                  stroke="#6b7280" 
+                <XAxis
+                  dataKey="day"
+                  stroke="#6b7280"
                   tickFormatter={(value) => {
-                    const date = new Date(value)
-                    return date.toLocaleDateString('vi-VN', { day: '2-digit', month: '2-digit' })
+                    const date = new Date(value);
+                    return date.toLocaleDateString('vi-VN', {
+                      day: '2-digit',
+                      month: '2-digit',
+                    });
                   }}
                 />
                 <YAxis stroke="#6b7280" />
-                <Tooltip 
-                  contentStyle={{ backgroundColor: '#111827', border: '1px solid #374151' }}
+                <Tooltip
+                  contentStyle={{
+                    backgroundColor: '#111827',
+                    border: '1px solid #374151',
+                  }}
                   labelStyle={{ color: '#ffffff' }}
                   labelFormatter={(value) => {
-                    const date = new Date(value)
-                    return date.toLocaleDateString('vi-VN', { 
+                    const date = new Date(value);
+                    return date.toLocaleDateString('vi-VN', {
                       weekday: 'long',
-                      day: '2-digit', 
+                      day: '2-digit',
                       month: '2-digit',
-                      year: 'numeric'
-                    })
+                      year: 'numeric',
+                    });
                   }}
                   formatter={(value: number) => [value, 'Đơn hàng']}
                 />
@@ -208,10 +239,9 @@ export default function AdminDashboard() {
         </Card>
       </div>
 
-
       <Card className="border-gray-800 bg-gray-950 p-6">
         <h3 className="text-lg font-semibold text-white">Sản phẩm bán chạy</h3>
-        <p className="text-sm text-gray-400">Top sản phẩm có doanh thu cao nhất</p>
+        <p className="text-sm text-gray-400">Top sản phẩm có doanh thu cao</p>
         <div className="mt-6">
           <div className="overflow-x-auto">
             <table className="w-full">
@@ -228,9 +258,11 @@ export default function AdminDashboard() {
                   stats.topProducts.map((product: any, index: number) => (
                     <tr key={index} className="border-b border-gray-800/50">
                       <td className="py-4 text-white">{product.name}</td>
-                      <td className="py-4 text-gray-300">{product.sold} sản phẩm</td>
+                      <td className="py-4 text-gray-300">
+                        {product.sold.toLocaleString('vi-VN')} sản phẩm
+                      </td>
                       <td className="py-4 font-medium text-blue-400">
-                        {Math.round(product.revenue).toLocaleString("vi-VN")} ₫
+                        {formatCurrency(Math.round(product.revenue))}
                       </td>
                     </tr>
                   ))
@@ -247,5 +279,5 @@ export default function AdminDashboard() {
         </div>
       </Card>
     </div>
-  )
+  );
 }

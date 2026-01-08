@@ -18,3 +18,9 @@ export interface CartResponse {
   success: boolean;
   message: string;
 }
+export interface StockWarningState {
+  isOpen: boolean;
+  productName: string;
+  requestedQty: number;
+  availableQty: number;
+}

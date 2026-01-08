@@ -1,7 +1,6 @@
 <?php
 // htdocs/techstore-api/admin/admin_products_get.php
 
-// ✅ TẮT ERROR HIỂN THỊ RA NGOÀI (PRODUCTION MODE)
 error_reporting(0);
 ini_set('display_errors', 0);
 

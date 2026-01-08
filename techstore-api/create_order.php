@@ -13,7 +13,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'OPTIONS') {
 }
 
 // === KẾT NỐI CSDL ===
-// ✅ TẮT ERROR HIỂN THỊ RA NGOÀI (PRODUCTION MODE)
 error_reporting(0);
 ini_set('display_errors', 0);
 
@@ -69,9 +68,9 @@ $notes = $data->notes ?? "";
 $conn->begin_transaction();
 
 try {
-    // ========================================
+     
     // 1. LẤY CART_ID CỦA USER
-    // ========================================
+     
     $stmt_cart = $conn->prepare("SELECT id FROM Carts WHERE user_id = ?");
     $stmt_cart->bind_param("i", $user_id);
     $stmt_cart->execute();
@@ -84,17 +83,17 @@ try {
     $cart_id = $result_cart->fetch_assoc()['id'];
     $stmt_cart->close();
 
-    // ========================================
+     
     // 2. CHUẨN BỊ QUERY LẤY CART ITEMS
-    // ========================================
+     
     $placeholders = implode(',', array_fill(0, count($item_ids), '?'));
     $types = str_repeat('i', count($item_ids));
     $sql_types = "i" . $types;
     $sql_params = array_merge([$cart_id], $item_ids);
 
-    // ========================================
+     
     // 3. LẤY CÁC SẢN PHẨM ĐÃ CHỌN TỪ GIỎ HÀNG
-    // ========================================
+     
     $sql_items = "
         SELECT 
             ci.id AS cart_item_id, 
@@ -116,9 +115,9 @@ try {
         throw new Exception("Không tìm thấy sản phẩm trong giỏ hàng hoặc sản phẩm không hợp lệ.");
     }
 
-    // ========================================
+     
     // 4. KIỂM TRA TỒN KHO VÀ TÍNH TỔNG TIỀN
-    // ========================================
+     
     $subtotal = 0;
     $items_to_insert = [];
 
@@ -136,16 +135,16 @@ try {
     }
     $stmt_items->close();
 
-    // ========================================
+     
     // 5. TÍNH PHÍ SHIP VÀ TỔNG TIỀN
-    // ========================================
+     
     $shipping_fee = ($subtotal >= 500000) ? 0 : 30000;
     $total_amount = $subtotal + $shipping_fee;
     $order_code = "ORD-" . strtoupper(bin2hex(random_bytes(6)));
 
-    // ========================================
+     
     // 6. TẠO ĐƠN HÀNG MỚI
-    // ========================================
+     
     $sql_create_order = "
         INSERT INTO Orders (
             user_id, 
@@ -195,9 +194,9 @@ try {
     $new_order_id = $conn->insert_id;
     $stmt_order->close();
 
-    // ========================================
+     
     // 7. THÊM ITEMS VÀO ĐƠN HÀNG + TRỪ TỒN KHO
-    // ========================================
+     
     $sql_insert_item = "
         INSERT INTO OrderItems (order_id, variant_id, quantity, price_at_purchase) 
         VALUES (?, ?, ?, ?)
@@ -251,9 +250,9 @@ try {
     $stmt_insert_item->close();
     $stmt_update_stock->close();
 
-    // ========================================
+     
     // 8. XÓA CÁC SẢN PHẨM ĐÃ MUA KHỎI GIỎ HÀNG
-    // ========================================
+     
     $sql_clear_cart = "DELETE FROM CartItems WHERE cart_id = ? AND id IN ($placeholders)";
     $stmt_clear_cart = $conn->prepare($sql_clear_cart);
     $stmt_clear_cart->bind_param($sql_types, ...$sql_params);
@@ -264,14 +263,11 @@ try {
 
     $stmt_clear_cart->close();
 
-    // ========================================
     // 9. COMMIT TRANSACTION
-    // ========================================
     $conn->commit();
 
-    // ========================================
     // 10. TRẢ VỀ KẾT QUẢ THÀNH CÔNG
-    // ========================================
+     
     http_response_code(201);
     echo json_encode(array(
         "success" => true,

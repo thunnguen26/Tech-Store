@@ -4,7 +4,7 @@ export interface User {
   id: number;
   firstName: string;
   lastName: string;
-  name?: string; 
+  name?: string;
   email?: string;
   role: 'admin' | 'customer';
 }
@@ -16,6 +16,7 @@ export interface FullUserData {
   email: string;
   phone: string;
   created_at: string;
+  role: 'admin' | 'customer';
 }
 
 // === Dữ liệu Form Auth ===

@@ -1,108 +1,154 @@
 // app/cart/page.tsx
-"use client"
+'use client';
 
-import { useState, useEffect } from "react"
-import { useRouter } from "next/navigation"
-import { Header } from "@/components/header"
-import { Footer } from "@/components/footer"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Minus, Plus, X, ShoppingBag, ArrowRight, Tag, Truck, Shield, Package, CheckSquare, Square } from "lucide-react"
-import Image from "next/image"
-import Link from "next/link"
+import { useState, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
+import { Header } from '@/components/header';
+import { Footer } from '@/components/footer';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import {
+  Minus,
+  Plus,
+  X,
+  ShoppingBag,
+  ArrowRight,
+  Tag,
+  Truck,
+  Shield,
+  Package,
+  CheckSquare,
+  Square,
+} from 'lucide-react';
+import Image from 'next/image';
+import Link from 'next/link';
+import { StockWarningModal } from '@/components/StockWarningModal';
 
-import { CartService } from "@/services/CartService"
-import { CartItem } from "@/models/Cart.model"
+import { CartService } from '@/services/CartService';
+import { CartItem, StockWarningState } from '@/models/Cart.model';
 
 export default function CartPage() {
-  const [cartItems, setCartItems] = useState<CartItem[]>([])
-  const [isLoading, setIsLoading] = useState(true)
-  const [couponCode, setCouponCode] = useState("")
-  const [selectedItems, setSelectedItems] = useState<Set<number>>(new Set())
-  const router = useRouter()
+  const [cartItems, setCartItems] = useState<CartItem[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [couponCode, setCouponCode] = useState('');
+  const [selectedItems, setSelectedItems] = useState<Set<number>>(new Set());
+  // Thêm state warning stock
+  const [stockWarning, setStockWarning] = useState<StockWarningState | null>(
+    null,
+  );
+  const router = useRouter();
 
   // Hàm tải giỏ hàng
   const fetchCart = async () => {
-    setIsLoading(true)
-    const items = await CartService.getCart()
-    setCartItems(items)
-    setSelectedItems(new Set(items.map((item) => item.cart_item_id)))
-    setIsLoading(false)
-  }
+    setIsLoading(true);
+    const items = await CartService.getCart();
+    // SẮP XẾP
+    const sortedItems = [...items].sort((a, b) => {
+      return b.cart_item_id - a.cart_item_id; // Giảm dần
+    });
+    setCartItems(sortedItems);
+    // setSelectedItems(new Set(items.map((item) => item.cart_item_id)));
+    setIsLoading(false);
+  };
 
   useEffect(() => {
-    fetchCart()
-  }, [])
+    fetchCart();
+  }, []);
 
   // Hàm toggle chọn item
   const toggleSelectItem = (id: number) => {
-    const newSelected = new Set(selectedItems)
+    const newSelected = new Set(selectedItems);
     if (newSelected.has(id)) {
-      newSelected.delete(id)
+      newSelected.delete(id);
     } else {
-      newSelected.add(id)
+      newSelected.add(id);
     }
-    setSelectedItems(newSelected)
-  }
+    setSelectedItems(newSelected);
+  };
 
   // Hàm chọn/bỏ chọn tất cả
   const toggleSelectAll = () => {
     if (selectedItems.size === cartItems.length) {
-      setSelectedItems(new Set())
+      setSelectedItems(new Set());
     } else {
-      setSelectedItems(new Set(cartItems.map((item) => item.cart_item_id)))
+      setSelectedItems(new Set(cartItems.map((item) => item.cart_item_id)));
     }
-  }
+  };
 
   // Cập nhật số lượng
   const updateQuantity = async (id: number, newQuantity: number) => {
     if (newQuantity < 1) {
-      removeItem(id)
-      return
+      removeItem(id);
+      return;
     }
 
-    setCartItems(cartItems.map((item) => (item.cart_item_id === id ? { ...item, quantity: newQuantity } : item)))
+    setCartItems(
+      cartItems.map((item) =>
+        item.cart_item_id === id ? { ...item, quantity: newQuantity } : item,
+      ),
+    );
 
-    const result = await CartService.updateQuantity(id, newQuantity)
+    const result = await CartService.updateQuantity(id, newQuantity);
     if (!result.success) {
-      alert(result.message)
-      fetchCart()
+      alert(result.message);
+      fetchCart();
     }
-  }
+  };
 
   // Xóa sản phẩm
   const removeItem = async (id: number) => {
-    setCartItems(cartItems.filter((item) => item.cart_item_id !== id))
+    setCartItems(cartItems.filter((item) => item.cart_item_id !== id));
 
-    const newSelected = new Set(selectedItems)
-    newSelected.delete(id)
-    setSelectedItems(newSelected)
+    const newSelected = new Set(selectedItems);
+    newSelected.delete(id);
+    setSelectedItems(newSelected);
 
-    const result = await CartService.removeItem(id)
+    const result = await CartService.removeItem(id);
     if (!result.success) {
-      alert(result.message)
-      fetchCart()
+      alert(result.message);
+      fetchCart();
     }
-  }
+  };
 
-  const handleCheckout = () => {
-    const selectedIds = Array.from(selectedItems)
+  const handleCheckout = async () => {
+    const selectedIds = Array.from(selectedItems);
 
     if (selectedIds.length === 0) {
-      alert("Bạn chưa chọn sản phẩm nào để thanh toán.")
-      return
+      alert('Bạn chưa chọn sản phẩm nào để thanh toán.');
+      return;
     }
 
-    localStorage.setItem("techstore_selected_ids", JSON.stringify(selectedIds))
-    router.push("/checkout")
-  }
+    // KIỂM TRA TỒN KHO - Sửa lỗi undefined
+    for (const item of selectedCartItems) {
+      const stockQty = item.stock_quantity ?? 0; // Xử lý undefined
 
+      if (item.quantity > stockQty) {
+        setStockWarning({
+          isOpen: true,
+          productName: `${item.name} (${item.size || 'N/A'}, ${
+            item.color_name || 'N/A'
+          })`,
+          requestedQty: item.quantity,
+          availableQty: stockQty,
+        });
+        return; // Dừng lại, không cho checkout
+      }
+    }
+
+    localStorage.setItem('techstore_selected_ids', JSON.stringify(selectedIds));
+    router.push('/checkout');
+  };
   // Tính tiền các items được chọn
-  const selectedCartItems = cartItems.filter((item) => selectedItems.has(item.cart_item_id))
-  const subtotal = selectedCartItems.reduce((sum, item) => sum + item.price * item.quantity, 0)
-  const shipping = subtotal >= 500000 ? 0 : subtotal > 0 ? 30000 : 0
-  const discount = 0
-  const total = subtotal + shipping - discount
+  const selectedCartItems = cartItems.filter((item) =>
+    selectedItems.has(item.cart_item_id),
+  );
+  const subtotal = selectedCartItems.reduce(
+    (sum, item) => sum + item.price * item.quantity,
+    0,
+  );
+  const shipping = subtotal >= 500000 ? 0 : subtotal > 0 ? 30000 : 0;
+  const discount = 0;
+  const total = subtotal + shipping - discount;
 
   // Loading State
   if (isLoading) {
@@ -112,12 +158,14 @@ export default function CartPage() {
         <main className="flex-1 flex items-center justify-center py-16">
           <div className="text-center">
             <div className="w-16 h-16 border-4 border-primary/30 border-t-primary rounded-full animate-spin mx-auto mb-4"></div>
-            <p className="text-muted-foreground text-lg">Đang tải giỏ hàng...</p>
+            <p className="text-muted-foreground text-lg">
+              Đang tải giỏ hàng...
+            </p>
           </div>
         </main>
         <Footer />
       </div>
-    )
+    );
   }
 
   // Empty Cart
@@ -132,10 +180,14 @@ export default function CartPage() {
             </div>
             <h2 className="text-3xl font-bold mb-4">Giỏ hàng trống</h2>
             <p className="text-muted-foreground text-lg mb-8">
-              Bạn chưa có sản phẩm nào trong giỏ hàng. Hãy khám phá các sản phẩm công nghệ của chúng tôi!
+              Bạn chưa có sản phẩm nào trong giỏ hàng. Hãy khám phá các sản phẩm
+              công nghệ của chúng tôi!
             </p>
             <Link href="/products">
-              <Button size="lg" className="h-12 px-8 shadow-lg hover:shadow-xl transition-all hover:-translate-y-0.5">
+              <Button
+                size="lg"
+                className="h-12 px-8 shadow-lg hover:shadow-xl transition-all hover:-translate-y-0.5"
+              >
                 Tiếp tục mua sắm
                 <ArrowRight className="ml-2 h-5 w-5" />
               </Button>
@@ -144,7 +196,7 @@ export default function CartPage() {
         </main>
         <Footer />
       </div>
-    )
+    );
   }
 
   // Cart with Items
@@ -165,12 +217,21 @@ export default function CartPage() {
               </h1>
             </div>
             <p className="text-muted-foreground text-lg">
-              Bạn có <span className="font-semibold text-primary">{cartItems.length}</span> sản phẩm trong giỏ hàng
-              {selectedItems.size > 0 && selectedItems.size < cartItems.length && (
-                <span className="ml-2">
-                  • Đã chọn <span className="font-semibold text-primary">{selectedItems.size}</span> sản phẩm
-                </span>
-              )}
+              Bạn có{' '}
+              <span className="font-semibold text-primary">
+                {cartItems.length}
+              </span>{' '}
+              sản phẩm trong giỏ hàng
+              {selectedItems.size > 0 &&
+                selectedItems.size < cartItems.length && (
+                  <span className="ml-2">
+                    • Đã chọn{' '}
+                    <span className="font-semibold text-primary">
+                      {selectedItems.size}
+                    </span>{' '}
+                    sản phẩm
+                  </span>
+                )}
             </p>
           </div>
         </section>
@@ -195,7 +256,9 @@ export default function CartPage() {
                     <span>Chọn tất cả ({cartItems.length} sản phẩm)</span>
                   </button>
                   {selectedItems.size > 0 && (
-                    <span className="text-sm text-muted-foreground ml-auto">Đã chọn: {selectedItems.size}</span>
+                    <span className="text-sm text-muted-foreground ml-auto">
+                      Đã chọn: {selectedItems.size}
+                    </span>
                   )}
                 </div>
 
@@ -203,7 +266,9 @@ export default function CartPage() {
                   <div
                     key={item.cart_item_id}
                     className={`flex gap-4 p-5 border-2 rounded-2xl bg-card/80 backdrop-blur-sm hover:shadow-lg transition-all duration-300 group ${
-                      selectedItems.has(item.cart_item_id) ? "border-primary/50 shadow-md" : "border-border/50"
+                      selectedItems.has(item.cart_item_id)
+                        ? 'border-primary/50 shadow-md'
+                        : 'border-border/50'
                     }`}
                   >
                     {/* Checkbox */}
@@ -222,7 +287,7 @@ export default function CartPage() {
 
                     <div className="relative w-28 h-28 flex-shrink-0 rounded-xl overflow-hidden bg-muted shadow-md group-hover:shadow-lg transition-shadow">
                       <Image
-                        src={item.base_image || "/placeholder.svg"}
+                        src={item.base_image || '/placeholder.svg'}
                         alt={item.name}
                         fill
                         className="object-cover group-hover:scale-105 transition-transform duration-300"
@@ -239,10 +304,14 @@ export default function CartPage() {
                           </Link>
                           <div className="flex items-center gap-3 text-sm text-muted-foreground">
                             {item.size && (
-                              <span className="px-2 py-1 bg-muted rounded-md font-medium">Size: {item.size}</span>
+                              <span className="px-2 py-1 bg-muted rounded-md font-medium">
+                                Size: {item.size}
+                              </span>
                             )}
                             {item.color_name && (
-                              <span className="px-2 py-1 bg-muted rounded-md font-medium">Màu: {item.color_name}</span>
+                              <span className="px-2 py-1 bg-muted rounded-md font-medium">
+                                Màu: {item.color_name}
+                              </span>
                             )}
                           </div>
                         </div>
@@ -256,17 +325,24 @@ export default function CartPage() {
 
                       <div className="flex items-center justify-between gap-4 mt-4">
                         <div className="flex items-center gap-2">
-                          <span className="font-bold text-xl text-primary">{item.price.toLocaleString("vi-VN")}₫</span>
+                          <span className="font-bold text-xl text-primary">
+                            {item.price.toLocaleString('vi-VN')}₫
+                          </span>
                           {item.original_price && item.original_price > 0 && (
                             <span className="text-sm text-muted-foreground line-through">
-                              {item.original_price.toLocaleString("vi-VN")}₫
+                              {item.original_price.toLocaleString('vi-VN')}₫
                             </span>
                           )}
                         </div>
 
                         <div className="flex items-center border-2 border-border rounded-lg overflow-hidden shadow-sm">
                           <button
-                            onClick={() => updateQuantity(item.cart_item_id, item.quantity - 1)}
+                            onClick={() =>
+                              updateQuantity(
+                                item.cart_item_id,
+                                item.quantity - 1,
+                              )
+                            }
                             className="px-3 py-2 hover:bg-primary/10 transition-colors"
                           >
                             <Minus className="h-4 w-4" />
@@ -275,7 +351,12 @@ export default function CartPage() {
                             {item.quantity}
                           </span>
                           <button
-                            onClick={() => updateQuantity(item.cart_item_id, item.quantity + 1)}
+                            onClick={() =>
+                              updateQuantity(
+                                item.cart_item_id,
+                                item.quantity + 1,
+                              )
+                            }
                             className="px-3 py-2 hover:bg-primary/10 transition-colors"
                           >
                             <Plus className="h-4 w-4" />
@@ -313,34 +394,48 @@ export default function CartPage() {
 
                     <div className="space-y-4 mb-6">
                       <div className="flex justify-between text-base">
-                        <span className="text-muted-foreground">Sản phẩm đã chọn:</span>
-                        <span className="font-semibold">{selectedItems.size} sản phẩm</span>
+                        <span className="text-muted-foreground">
+                          Sản phẩm đã chọn:
+                        </span>
+                        <span className="font-semibold">
+                          {selectedItems.size} sản phẩm
+                        </span>
                       </div>
                       <div className="flex justify-between text-base">
                         <span className="text-muted-foreground">Tạm tính:</span>
-                        <span className="font-semibold">{subtotal.toLocaleString("vi-VN")}₫</span>
+                        <span className="font-semibold">
+                          {subtotal.toLocaleString('vi-VN')}₫
+                        </span>
                       </div>
                       <div className="flex justify-between text-base">
-                        <span className="text-muted-foreground">Phí vận chuyển:</span>
+                        <span className="text-muted-foreground">
+                          Phí vận chuyển:
+                        </span>
                         <span className="font-semibold">
                           {shipping === 0 ? (
                             <span className="text-green-600">Miễn phí</span>
                           ) : (
-                            `${shipping.toLocaleString("vi-VN")}₫`
+                            `${shipping.toLocaleString('vi-VN')}₫`
                           )}
                         </span>
                       </div>
                       {discount > 0 && (
                         <div className="flex justify-between text-base text-green-600">
                           <span>Giảm giá:</span>
-                          <span className="font-semibold">-{discount.toLocaleString("vi-VN")}₫</span>
+                          <span className="font-semibold">
+                            -{discount.toLocaleString('vi-VN')}₫
+                          </span>
                         </div>
                       )}
 
                       <div className="border-t-2 border-border pt-4">
                         <div className="flex justify-between items-center">
-                          <span className="text-lg font-semibold">Tổng cộng:</span>
-                          <span className="text-2xl font-bold text-primary">{total.toLocaleString("vi-VN")}₫</span>
+                          <span className="text-lg font-semibold">
+                            Tổng cộng:
+                          </span>
+                          <span className="text-2xl font-bold text-primary">
+                            {total.toLocaleString('vi-VN')}₫
+                          </span>
                         </div>
                       </div>
                     </div>
@@ -358,7 +453,10 @@ export default function CartPage() {
                           onChange={(e) => setCouponCode(e.target.value)}
                           className="h-11 border-2 focus:border-primary"
                         />
-                        <Button variant="outline" className="h-11 border-2 hover:border-primary/50 bg-transparent">
+                        <Button
+                          variant="outline"
+                          className="h-11 border-2 hover:border-primary/50 bg-transparent"
+                        >
                           Áp dụng
                         </Button>
                       </div>
@@ -371,7 +469,7 @@ export default function CartPage() {
                       onClick={handleCheckout}
                     >
                       {selectedItems.size === 0 ? (
-                        "Vui lòng chọn sản phẩm"
+                        'Vui lòng chọn sản phẩm'
                       ) : (
                         <>
                           Thanh toán ({selectedItems.size})
@@ -383,7 +481,9 @@ export default function CartPage() {
 
                   {/* Benefits Card */}
                   <div className="border-2 border-border/50 rounded-2xl p-5 bg-gradient-to-br from-primary/5 to-primary/3 backdrop-blur-sm">
-                    <h3 className="font-semibold mb-4 text-sm">Mua sắm an toàn</h3>
+                    <h3 className="font-semibold mb-4 text-sm">
+                      Mua sắm an toàn
+                    </h3>
                     <div className="space-y-3 text-xs text-muted-foreground">
                       <div className="flex items-center gap-2">
                         <Shield className="h-4 w-4 text-green-600 flex-shrink-0" />
@@ -407,6 +507,16 @@ export default function CartPage() {
       </main>
 
       <Footer />
+      {/* Modal cảnh báo */}
+      {stockWarning && (
+        <StockWarningModal
+          isOpen={stockWarning.isOpen}
+          onClose={() => setStockWarning(null)}
+          productName={stockWarning.productName}
+          requestedQty={stockWarning.requestedQty}
+          availableQty={stockWarning.availableQty}
+        />
+      )}
     </div>
-  )
+  );
 }

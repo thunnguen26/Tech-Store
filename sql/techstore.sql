@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Máy chủ: 127.0.0.1
--- Thời gian đã tạo: Th12 06, 2025 lúc 06:13 AM
+-- Thời gian đã tạo: Th1 08, 2026 lúc 02:28 AM
 -- Phiên bản máy phục vụ: 10.4.32-MariaDB
 -- Phiên bản PHP: 8.0.30
 
@@ -40,8 +40,12 @@ CREATE TABLE `cartitems` (
 --
 
 INSERT INTO `cartitems` (`id`, `cart_id`, `variant_id`, `quantity`, `added_at`) VALUES
-(51, 8, 57, 3, '2025-11-27 05:29:33'),
-(54, 8, 58, 1, '2025-11-28 20:41:28');
+(70, 4, 39, 6, '2025-12-06 05:18:04'),
+(71, 8, 44, 45, '2025-12-06 10:54:41'),
+(73, 8, 54, 1, '2025-12-25 00:59:40'),
+(74, 8, 39, 2, '2025-12-25 01:00:39'),
+(75, 4, 56, 16, '2026-01-07 23:52:17'),
+(76, 4, 66, 19, '2026-01-07 23:54:31');
 
 -- --------------------------------------------------------
 
@@ -123,7 +127,11 @@ INSERT INTO `orderitems` (`id`, `order_id`, `variant_id`, `quantity`, `price_at_
 (32, 30, 65, 1, 23000000.00),
 (33, 31, 57, 1, 11000000.00),
 (34, 32, 54, 1, 36000000.00),
-(35, 33, 54, 1, 36000000.00);
+(35, 33, 54, 1, 36000000.00),
+(36, 34, 57, 3, 11000000.00),
+(37, 35, 58, 1, 27500000.00),
+(38, 36, 44, 1, 30000000.00),
+(39, 37, 57, 1, 11000000.00);
 
 -- --------------------------------------------------------
 
@@ -174,8 +182,12 @@ INSERT INTO `orders` (`id`, `user_id`, `order_code`, `customer_first_name`, `cus
 (29, 9, 'ORD-C43FD110B998', 'Trần Văn', 'Tri', 'tri@gmail.com', '0985563320', '224 Trần Đại Nghĩa', 'Đà Nẵng', 'Ngũ Hành Sơn', 28000000.00, 0.00, 0.00, 28000000.00, 'cod', 'Cẩn thận', 'completed', '2025-12-03 03:29:29'),
 (30, 9, 'ORD-E978F7D56815', 'Trần Văn', 'Tri', 'tri@gmail.com', '0985563320', '224 Trần Đại Nghĩa', 'Đà Nẵng', 'Ngũ Hành Sơn', 23000000.00, 0.00, 0.00, 23000000.00, 'cod', 'Chú ý giao hàng cẩn thận', 'completed', '2025-12-03 03:33:22'),
 (31, 9, 'ORD-14113347738C', 'Trần Văn', 'Tri', 'thuan@gmail.com', '0985563320', '224 Trần Đại Nghĩa', 'Đà Nẵng', 'Ngũ Hành Sơn', 11000000.00, 0.00, 0.00, 11000000.00, 'cod', 'Cẩn thận', 'cancelled', '2025-12-03 03:42:01'),
-(32, 8, 'ORD-3F759F12532B', 'Nguyễn Văn', 'An', 'an@gmail.com', '0908124760', '33 Trần Đại Nghĩa', 'Đà Nẵng', 'Ngũ Hành Sơn', 36000000.00, 0.00, 0.00, 36000000.00, 'cod', 'Chú ý', 'shipped', '2025-12-03 08:37:20'),
-(33, 2, 'ORD-2A4E52C9584F', 'Nguyễn Phước', 'Thuần', 'thuan@gmail.com', '0981664778', '12 Nam Kì Khởi Nghĩa', 'Đà Nẵng', 'Ngũ Hành Sơn', 36000000.00, 0.00, 0.00, 36000000.00, 'cod', 'Cẩn thận', 'pending', '2025-12-04 02:48:56');
+(32, 8, 'ORD-3F759F12532B', 'Nguyễn Văn', 'An', 'an@gmail.com', '0908124760', '33 Trần Đại Nghĩa', 'Đà Nẵng', 'Ngũ Hành Sơn', 36000000.00, 0.00, 0.00, 36000000.00, 'cod', 'Chú ý', 'completed', '2025-12-03 08:37:20'),
+(33, 2, 'ORD-2A4E52C9584F', 'Nguyễn Phước', 'Thuần', 'thuan@gmail.com', '0981664778', '12 Nam Kì Khởi Nghĩa', 'Đà Nẵng', 'Ngũ Hành Sơn', 36000000.00, 0.00, 0.00, 36000000.00, 'cod', 'Cẩn thận', 'completed', '2025-12-04 02:48:56'),
+(34, 1, 'ORD-08A6FC014B8C', 'Nguyễn Phước', 'Thuần', 'thuan@gmail.com', '0981664778', '12 Nam Kì Khởi Nghĩa', 'Đà Nẵng', 'Ngũ Hành Sơn', 33000000.00, 0.00, 0.00, 33000000.00, 'cod', '', 'completed', '2025-12-06 10:55:06'),
+(35, 1, 'ORD-33A9872B60FD', 'Nguyễn Phước', 'Thuần', 'thunnguen26@gmail.com', '0905766893', '22 Phan Đình Thông', 'Đà Nẵng', 'Ngũ Hành Sơn', 27500000.00, 0.00, 0.00, 27500000.00, 'cod', '', 'completed', '2025-12-25 01:00:06'),
+(36, 2, 'ORD-C0B2E550C7EA', 'Nguyễn Phước', 'Thuần', 'thuan@gmail.com', '0981664778', '22 Phan Đình Thông', 'Đà Nẵng', 'Ngũ Hành Sơn', 30000000.00, 0.00, 0.00, 30000000.00, 'cod', '', 'completed', '2026-01-08 01:11:52'),
+(37, 2, 'ORD-77AFD5EFF2F8', 'Nguyễn Phước', 'Thuần', 'thuan@gmail.com', '0981664778', '22 Phan Đình Thông', 'Đà Nẵng', 'Ngũ Hành Sơn', 11000000.00, 0.00, 0.00, 11000000.00, 'cod', '', 'completed', '2026-01-08 01:13:37');
 
 -- --------------------------------------------------------
 
@@ -328,13 +340,13 @@ INSERT INTO `productvariants` (`id`, `product_id`, `size`, `color_name`, `color_
 (39, 25, '256GB', 'Xanh Lưu Ly', '#6f90dc', 27000000.00, 28499000.00, 'IP16-256-XLLP', 25),
 (40, 25, '256GB', 'Đen', '#000000', 27000000.00, 28499000.00, 'IP16-256-DP', 19),
 (41, 25, '256GB', 'Xanh Mòng Két', '#96d4c1', 27000000.00, 28499000.00, 'IP16-256-XMKP', 18),
-(44, 26, '256GB', 'Trắng mây', '#ebebeb', 30000000.00, 31799000.00, 'IP-256-TMAIR', 22),
+(44, 26, '256GB', 'Trắng mây', '#ebebeb', 30000000.00, 31799000.00, 'IP-256-TMAIR', 21),
 (45, 26, '256GB', 'Đen Không Gian', '#3b3b3b', 30000000.00, 31798000.00, 'IP-256-DKGAIR', 18),
 (54, 24, '256GB', 'Cam', '#fe8b20', 36000000.00, 38000000.00, 'IP17-256-CAM', 28),
 (55, 24, '1T', 'Bạc', '#d1d1d1', 36000000.00, 38000000.00, 'IP17-256-BAC', 30),
 (56, 27, '256GB', 'Xanh Da Trời', '#c2ebff', 26500000.00, 28000000.00, 'MB-256-AIR13', 14),
-(57, 28, ' ', 'Xanh lá cây', '#dbffe4', 11000000.00, 12000000.00, 'AP-XLC', 33),
-(58, 29, '256GB', 'Đen', '#000000', 27500000.00, 29000000.00, 'IPD-256-D', 23),
+(57, 28, ' ', 'Xanh lá cây', '#dbffe4', 11000000.00, 12000000.00, 'AP-XLC', 29),
+(58, 29, '256GB', 'Đen', '#000000', 27500000.00, 29000000.00, 'IPD-256-D', 22),
 (59, 29, '1T', 'Đen', '#000000', 40000000.00, 41500000.00, 'IPD-1T-D', 12),
 (60, 30, '256 GB', 'Đen', '#000000', 28000000.00, 30000000.00, 'SS-256-S25D', 22),
 (61, 30, '512 GB', 'Đen', '#000000', 30000000.00, 32000000.00, 'SS-512-S25D', 20),
@@ -396,7 +408,7 @@ CREATE TABLE `users` (
 --
 
 INSERT INTO `users` (`id`, `first_name`, `last_name`, `email`, `phone`, `password_hash`, `created_at`, `role`) VALUES
-(1, 'Admin', 'Admin', 'admin@gmail.com', '0985563341', '$2y$10$FcHMffjCnZrAgaFtGF55r.xwQudj7SqvwZNK1WbIOYsiRCNWjIlha', '2025-11-25 12:45:47', 'admin'),
+(1, 'Admin', 'Admin', 'admin@gmail.com', '0985563341', '$2y$10$FcHMffjCnZrAgaFtGF55r.xwQudj7SqvwZNK1WbIOYsiRCNWjIlha', '2024-01-14 12:45:47', 'admin'),
 (2, 'Nguyễn Phước', 'Thuần', 'thuan@gmail.com', '0981664778', '$2y$10$0fbQePPU3ORubrRKU/Nl7ufb7Tz/v0zHM8To5pJ3v/SmWCGOWyxUy', '2025-11-03 03:11:53', 'customer'),
 (8, 'Nguyễn Văn', 'An', 'an@gmail.com', '0905766893', '$2y$10$hG4pp1J2JRvruVEk504/bOyfwdNKlnNN3YXVJgolj3ZHRaL4tFAFq', '2025-11-20 13:53:32', 'customer'),
 (9, 'Trần Văn', 'Tri', 'tri@gmail.com', '0908124765', '$2y$10$1PF2.DprIl25NvEXft2Nxu2HAyZDGxxXJ6AHuGBgd2aTMjlwxGL96', '2025-11-20 14:02:46', 'customer');
@@ -496,7 +508,7 @@ ALTER TABLE `users`
 -- AUTO_INCREMENT cho bảng `cartitems`
 --
 ALTER TABLE `cartitems`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=70;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=79;
 
 --
 -- AUTO_INCREMENT cho bảng `carts`
@@ -514,13 +526,13 @@ ALTER TABLE `categories`
 -- AUTO_INCREMENT cho bảng `orderitems`
 --
 ALTER TABLE `orderitems`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=36;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=40;
 
 --
 -- AUTO_INCREMENT cho bảng `orders`
 --
 ALTER TABLE `orders`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=34;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=38;
 
 --
 -- AUTO_INCREMENT cho bảng `passwordresets`
